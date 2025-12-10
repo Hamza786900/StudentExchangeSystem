@@ -7,7 +7,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class HelloApplication extends Application {
+public class MainApp extends Application {
     private static StudentBookExchange system = new StudentBookExchange();
     private static User currentUser = null;
     private Stage primaryStage;

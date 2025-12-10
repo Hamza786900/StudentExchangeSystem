@@ -1,4 +1,4 @@
-package com.studentexchangesystem;
+package com.studentexchange;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

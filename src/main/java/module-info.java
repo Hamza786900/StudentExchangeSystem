@@ -3,6 +3,6 @@ module com.example.studentexchangesystem {
     requires javafx.fxml;
 
 
-    opens com.example.studentexchangesystem to javafx.fxml;
-    exports com.example.studentexchangesystem;
+    opens com.studentexchange to javafx.fxml;
+    exports com.studentexchange;
 }
