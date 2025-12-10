@@ -822,15 +822,12 @@ public class StudentBookExchange {
 
             String trimmedCnic = cnic.trim();
 
-            // Remove any dashes for validation
             String cleanCnic = trimmedCnic.replaceAll("-", "");
 
-            // Must be exactly 13 digits
             if (!cleanCnic.matches("\\d{13}")) {
                 return false;
             }
 
-            // Basic format validation (00000-0000000-0)
             return trimmedCnic.matches("\\d{5}-\\d{7}-\\d") ||
                     trimmedCnic.matches("\\d{13}");
 
@@ -858,7 +855,6 @@ public class StudentBookExchange {
                         return true;
                     }
                 } catch (Exception e) {
-                    // Skip users with corrupted data
                     System.err.println("Error checking user existence: " + e.getMessage());
                 }
             }
@@ -872,24 +868,7 @@ public class StudentBookExchange {
         }
     }
 
-    public List<User> getActiveUsers() {
-        try {
-            List<User> activeUsers = new ArrayList<>();
-            for (User user : users.values()) {
-                try {
-                    if (user.hasTransactionHistory()) {
-                        activeUsers.add(user);
-                    }
-                } catch (Exception e) {
-                    // Skip users with data errors
-                    System.err.println("Error checking user activity: " + e.getMessage());
-                }
-            }
-            return activeUsers;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to get active users: " + e.getMessage());
-        }
-    }
+
 
     public float getTotalRevenue() {
         try {
@@ -903,7 +882,6 @@ public class StudentBookExchange {
                         paidTransactions++;
                     }
                 } catch (Exception e) {
-                    // Skip transactions with calculation errors
                     System.err.println("Error calculating transaction revenue: " + e.getMessage());
                 }
             }
@@ -921,119 +899,6 @@ public class StudentBookExchange {
         }
     }
 
-    public List<User> getTopSellers() {
-        try {
-            List<User> sellers = new ArrayList<>();
-
-            // Only include users who have sold items
-            for (User user : users.values()) {
-                try {
-                    if (user.getTotalEarned() > 0) {
-                        sellers.add(user);
-                    }
-                } catch (Exception e) {
-                    // Skip users with calculation errors
-                    System.err.println("Error checking seller earnings: " + e.getMessage());
-                }
-            }
-
-            // Sort by total earned (descending)
-            sellers.sort((a, b) -> {
-                try {
-                    return Float.compare(b.getTotalEarned(), a.getTotalEarned());
-                } catch (Exception e) {
-                    return 0; // Maintain order if comparison fails
-                }
-            });
-
-            // Return top 10 or fewer if not enough sellers
-            return sellers.subList(0, Math.min(10, sellers.size()));
-
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to get top sellers: " + e.getMessage());
-        }
-    }
-
-    public List<FreeResource> getMostDownloadedResources() {
-        try {
-            List<FreeResource> resources = catalog.getFreeResources();
-
-            // Sort by download count (descending)
-            resources.sort((a, b) -> {
-                try {
-                    return Integer.compare(b.getDownload_count(), a.getDownload_count());
-                } catch (Exception e) {
-                    return 0; // Maintain order if comparison fails
-                }
-            });
-
-            // Return top 10 or fewer if not enough resources
-            return resources.subList(0, Math.min(10, resources.size()));
-
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to get most downloaded resources: " + e.getMessage());
-        }
-    }
-
-    public boolean backupData() {
-        try {
-            // In a real system, this would serialize data to file/database
-            // For now, just validate data integrity
-
-            if (users.isEmpty() && !catalog.isEmpty()) {
-                throw new IllegalStateException("Data inconsistency: catalog has items but no users");
-            }
-
-            // Check for orphaned items (items with uploaders not in system)
-            for (Item item : catalog.getItems()) {
-                try {
-                    if (!users.containsKey(item.getUploader().getUser_id())) {
-                        throw new IllegalStateException("Orphaned item found: " + item.getItem_id());
-                    }
-                } catch (Exception e) {
-                    System.err.println("Error checking item uploader: " + e.getMessage());
-                }
-            }
-
-            // Check for orphaned transactions
-            for (Transaction transaction : transactions) {
-                try {
-                    if (!users.containsKey(transaction.getBuyer().getUser_id()) ||
-                            !users.containsKey(transaction.getSeller().getUser_id())) {
-                        throw new IllegalStateException("Orphaned transaction found: " + transaction.getTransaction_id());
-                    }
-                } catch (Exception e) {
-                    System.err.println("Error checking transaction users: " + e.getMessage());
-                }
-            }
-
-            return true;
-
-        } catch (IllegalStateException e) {
-            throw new IllegalStateException("Failed to backup data: " + e.getMessage());
-        } catch (Exception e) {
-            throw new RuntimeException("Unexpected error during backup: " + e.getMessage());
-        }
-    }
-
-    public boolean restoreData() {
-        try {
-            // In a real system, this would deserialize data from file/database
-            // For now, just clear current data and reinitialize
-
-            users.clear();
-            catalog.clearCatalog();
-            transactions.clear();
-
-            // Reinitialize credit system
-            credit_system = new CreditSystem();
-
-            return true;
-
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to restore data: " + e.getMessage());
-        }
-    }
 
     @Override
     public String toString() {
