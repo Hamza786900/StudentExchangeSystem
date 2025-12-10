@@ -78,7 +78,7 @@ public class Transaction {
             this.credits_used = 0;
 
             // Mark item as sold
-            item.markAsSold(buyer, new Date());
+            //item.markAsSold(buyer, new Date());
 
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Failed to create Transaction: " + e.getMessage());
@@ -626,34 +626,14 @@ public class Transaction {
 
     @Override
     public String toString() {
-        try {
-            String transId = getTransaction_id();
-            Date transDate = getTransaction_date();
-            String itemTitle = getItem().getTitle();
-            PaymentMethod payMethod = getPayment_method();
-            PaymentStatus payStatus = getPayment_status();
-            ShippingStatus shipStatus = getShipping_status();
-            int credits = getCredits_used();
-            Date shipDate = getShipping_date();
-            Date delDate = getDelivery_date();
-
-            return String.format(
-                    "Transaction ID: %s | Date: %s | Item: %s | " +
-                            "Payment Method: %s | Payment Status: %s | " +
-                            "Shipping Status: %s | Credits Used: %d | " +
-                            "Shipping Date: %s | Delivery Date: %s",
-                    transId,
-                    transDate,
-                    itemTitle,
-                    payMethod != null ? payMethod.name() : "Unknown",
-                    payStatus != null ? payStatus.name() : "Unknown",
-                    shipStatus != null ? shipStatus.name() : "Unknown",
-                    credits,
-                    shipDate != null ? shipDate : "Not shipped",
-                    delDate != null ? delDate : "Not delivered"
-            );
-        } catch (Exception e) {
-            return "Transaction [Error in toString(): " + e.getMessage() + "]";
-        }
+        return " ID: " + getTransaction_id() +
+                " Date: " + getTransaction_date() +
+                " Item: " + getItem().getTitle() +
+                " Payment method: " + getPayment_method() +
+                " Payment status: " + getPayment_status() +
+                " Shipping status: " + getShipping_status() +
+                " Credits used: " + getCredits_used() +
+                " Shipping date: " + getShipping_date() +
+                " delivery date: " + getDelivery_date();
     }
 }

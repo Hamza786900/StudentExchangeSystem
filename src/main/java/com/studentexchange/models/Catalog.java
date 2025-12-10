@@ -695,18 +695,12 @@ public class Catalog {
 
     @Override
     public String toString() {
-        try {
-            int itemCount = items.size();
-            Date lastUpdated = getUpdated_date();
-            int categoryCount = categories.size();
-            int availableCount = getAvailableItems().size();
-
-            return String.format(
-                    "Catalog{Items: %d, Available: %d, Categories: %d, Last Updated: %s}",
-                    itemCount, availableCount, categoryCount, lastUpdated
-            );
-        } catch (Exception e) {
-            return "Catalog{Error retrieving data: " + e.getMessage() + "}";
-        }
+        return String.format(
+                "Catalog{Items: %d, Available: %d, Categories: %d, Last Updated: %s}",
+                items.size(),
+                getAvailableItems().size(),
+                categories.size(),
+                getUpdated_date()
+        );
     }
 }

@@ -472,10 +472,12 @@ public class User {
 
     @Override
     public String toString() {
-        try {
-            return "ID: " + getUser_id() + " Name: " + getName() + " Email: " + getEmail() + " Phone: " + getPhone() + " Credit points: " + getCredit_points() + " rating: " + getAverage_rating() + " Verified: " + isIs_verified();
-        } catch (Exception e) {
-            return "Error generating string representation: " + e.getMessage();
-        }
+        return "ID: " + getUser_id() +
+                " Name: " + getName() +
+                " Email: " + getEmail() +
+                " Phone: " + getPhone() +
+                " Credit points: " + getCredit_points() +
+                " rating: " + getAverage_rating() +
+                " Verified: " + isIs_verified();
     }
 }

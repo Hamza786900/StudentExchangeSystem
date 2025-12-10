@@ -522,6 +522,7 @@ public class StudentBookExchange {
                 throw new IllegalArgumentException("Seller is not a registered user");
             }
 
+            // FIXED: Check availability WITHOUT marking as sold yet
             if (!forSaleItem.isAvailable()) {
                 throw new IllegalStateException("Item is not available for purchase");
             }
@@ -535,6 +536,7 @@ public class StudentBookExchange {
                 throw new IllegalArgumentException("Buyer cannot purchase from themselves");
             }
 
+            // Create transaction WITHOUT marking item as sold
             Transaction transaction = new Transaction(buyer, seller, forSaleItem, method);
             transactions.add(transaction);
 
@@ -547,6 +549,9 @@ public class StudentBookExchange {
                 transactions.remove(transaction);
                 throw new IllegalStateException("Failed to update user transaction records: " + e.getMessage());
             }
+
+            // FIXED: DO NOT mark item as sold here - wait for payment confirmation
+            // item.markAsSold(buyer, new Date()); // REMOVED
 
             return transaction;
 
@@ -660,8 +665,25 @@ public class StudentBookExchange {
                 throw new IllegalArgumentException("Invalid payment amount format");
             }
 
+            // FIXED: Don't check item availability here since it's already reserved in the transaction
+            // Instead, check if transaction hasn't already been paid
+            if (transaction.isPaid()) {
+                throw new IllegalStateException("Transaction has already been paid");
+            }
+
             transaction.completePayment(transaction.getPayment_method());
             transaction.updateShippingStatus(ShippingStatus.NOT_SHIPPED);
+
+            // FIXED: Mark item as sold only after successful payment
+            ForSaleItem item = transaction.getItem();
+            if (item.isAvailable()) {
+                item.markAsSold(transaction.getBuyer(), new Date());
+            } else {
+                // If item is already marked as sold, verify it's sold to the same buyer in this transaction
+                if (!item.getBuyer().equals(transaction.getBuyer())) {
+                    throw new IllegalStateException("Item is no longer available for purchase");
+                }
+            }
 
             // Award points for purchase
             credit_system.awardPointsForTransaction(transaction.getBuyer(), transaction.calculateTotal());
@@ -1142,18 +1164,8 @@ public class StudentBookExchange {
 
     @Override
     public String toString() {
-        try {
-            int userCount = users.size();
-            int itemCount = catalog.getItemCount();
-            int transactionCount = transactions.size();
-            float revenue = getTotalRevenue();
-
-            return String.format(
-                    "StudentBookExchange [Users: %d, Items: %d, Transactions: %d, Revenue: Rs. %.2f]",
-                    userCount, itemCount, transactionCount, revenue
-            );
-        } catch (Exception e) {
-            return "StudentBookExchange [Error generating string: " + e.getMessage() + "]";
-        }
+        return "Users: " + users.size() +
+                " Items: " + catalog.getItems().size() +
+                " Transactions: " + transactions.size();
     }
 }

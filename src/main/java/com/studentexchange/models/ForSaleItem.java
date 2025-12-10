@@ -402,22 +402,11 @@ public class ForSaleItem extends Item {
 
     @Override
     public String toString() {
-        try {
-            String baseString = super.toString();
-            float price = getPrice();
-            Condition condition = getCondition();
-            float discount = getDiscount_percentage();
-            Date saleDate = getSale_date();
-            boolean isSold = isIs_sold();
-
-            return baseString +
-                    " Price: " + price +
-                    " Condition: " + condition +
-                    " Discount: " + discount + "%" +
-                    " Date: " + (saleDate != null ? saleDate : "N/A") +
-                    " Sold: " + isSold;
-        } catch (Exception e) {
-            return "ForSaleItem [Error in toString(): " + e.getMessage() + "]";
-        }
+        return super.toString() +
+                " Price: " + getPrice() +
+                " Condition: " + getCondition() +
+                " Discount: " + getDiscount_percentage() + "%" +
+                " Date: " + getSale_date() +
+                " Sold: " + isIs_sold();
     }
 }

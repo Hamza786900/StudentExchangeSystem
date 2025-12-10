@@ -424,21 +424,11 @@ public class PastPaper extends ForSaleItem {
 
     @Override
     public String toString() {
-        try {
-            String baseString = super.toString();
-            String board = getExam_board();
-            int paperYear = getYear();
-            String subjCode = getSubject_code();
-
-            return baseString +
-                    " | Board: " + board +
-                    " | Year: " + paperYear +
-                    " | Subject: " + subjCode +
-                    " | Solved: " + (is_solved ? "Yes" : "No") +
-                    " | Compilation: " + (is_compilation ? "Yes" : "No") +
-                    " | Papers: " + total_papers;
-        } catch (Exception e) {
-            return "PastPaper [Error in toString(): " + e.getMessage() + "]";
-        }
+        return super.toString() +
+                " Board: " + getExam_board() +
+                " Year: " + getYear() +
+                " Subject: " + getSubject_code() +
+                " Solved: " + isIs_solved() +
+                " Compilation: " + isIs_compilation();
     }
 }
