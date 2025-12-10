@@ -6,7 +6,7 @@ import java.util.List;
 
 public class User {
     private String user_id;
-    private static int counter=0;
+    private static int counter = 0;
     private String name;
     private String cnic;
     private String email;
@@ -22,22 +22,46 @@ public class User {
 
     public User(String name, String cnic, String email, String password, String phone, String address) {
         try {
+            // Validate constructor parameters
+            if (name == null || name.trim().isEmpty()) {
+                throw new IllegalArgumentException("Name cannot be null or empty");
+            }
+            if (cnic == null || cnic.trim().isEmpty()) {
+                throw new IllegalArgumentException("CNIC cannot be null or empty");
+            }
+            if (email == null || email.trim().isEmpty()) {
+                throw new IllegalArgumentException("Email cannot be null or empty");
+            }
+            if (!email.contains("@")) {
+                throw new IllegalArgumentException("Invalid email format");
+            }
+            if (password == null || password.trim().isEmpty()) {
+                throw new IllegalArgumentException("Password cannot be null or empty");
+            }
+            if (phone == null || phone.trim().isEmpty()) {
+                throw new IllegalArgumentException("Phone cannot be null or empty");
+            }
+            if (address == null || address.trim().isEmpty()) {
+                throw new IllegalArgumentException("Address cannot be null or empty");
+            }
+
             counter++;
-            this.user_id = "USER_"+String.format("%03d",counter);
-            this.name = name;
-            this.cnic = cnic;
-            this.email = email;
-            this.password = password;
-            this.phone = phone;
-            this.address = address;
+            this.user_id = "USER_" + String.format("%03d", counter);
+            this.name = name.trim();
+            this.cnic = cnic.trim();
+            this.email = email.trim();
+            this.password = password.trim();
+            this.phone = phone.trim();
+            this.address = address.trim();
             this.registration_date = new Date();
             this.credit_points = 0;
             this.is_verified = false;
             this.average_rating = 0.0f;
             this.transactions_as_buyer = new ArrayList<>();
             this.transactions_as_seller = new ArrayList<>();
-        } catch (Exception e) {
-            System.out.println("Error creating user: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            // Re-throw with additional context
+            throw new IllegalArgumentException("Failed to create User: " + e.getMessage(), e);
         }
     }
 
@@ -47,9 +71,12 @@ public class User {
 
     public void setName(String name) {
         try {
-            this.name = name;
-        } catch (Exception e) {
-            System.out.println("Error setting name: " + e.getMessage());
+            if (name == null || name.trim().isEmpty()) {
+                throw new IllegalArgumentException("Name cannot be null or empty");
+            }
+            this.name = name.trim();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to set name: " + e.getMessage(), e);
         }
     }
 
@@ -59,9 +86,12 @@ public class User {
 
     public void setCnic(String cnic) {
         try {
-            this.cnic = cnic;
-        } catch (Exception e) {
-            System.out.println("Error setting CNIC: " + e.getMessage());
+            if (cnic == null || cnic.trim().isEmpty()) {
+                throw new IllegalArgumentException("CNIC cannot be null or empty");
+            }
+            this.cnic = cnic.trim();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to set CNIC: " + e.getMessage(), e);
         }
     }
 
@@ -71,9 +101,15 @@ public class User {
 
     public void setEmail(String email) {
         try {
-            this.email = email;
-        } catch (Exception e) {
-            System.out.println("Error setting email: " + e.getMessage());
+            if (email == null || email.trim().isEmpty()) {
+                throw new IllegalArgumentException("Email cannot be null or empty");
+            }
+            if (!email.contains("@")) {
+                throw new IllegalArgumentException("Invalid email format. Must contain '@'");
+            }
+            this.email = email.trim();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to set email: " + e.getMessage(), e);
         }
     }
 
@@ -83,9 +119,15 @@ public class User {
 
     public void setPassword(String password) {
         try {
-            this.password = password;
-        } catch (Exception e) {
-            System.out.println("Error setting password: " + e.getMessage());
+            if (password == null || password.trim().isEmpty()) {
+                throw new IllegalArgumentException("Password cannot be null or empty");
+            }
+            if (password.length() < 6) {
+                throw new IllegalArgumentException("Password must be at least 6 characters long");
+            }
+            this.password = password.trim();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to set password: " + e.getMessage(), e);
         }
     }
 
@@ -95,9 +137,15 @@ public class User {
 
     public void setPhone(String phone) {
         try {
-            this.phone = phone;
-        } catch (Exception e) {
-            System.out.println("Error setting phone: " + e.getMessage());
+            if (phone == null || phone.trim().isEmpty()) {
+                throw new IllegalArgumentException("Phone cannot be null or empty");
+            }
+            if(phone.length()<10 || phone.length()>11){
+                throw new IllegalArgumentException("Phone must be at least 10 characters long");
+            }
+            this.phone = phone.trim();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to set phone: " + e.getMessage(), e);
         }
     }
 
@@ -107,9 +155,12 @@ public class User {
 
     public void setAddress(String address) {
         try {
-            this.address = address;
-        } catch (Exception e) {
-            System.out.println("Error setting address: " + e.getMessage());
+            if (address == null || address.trim().isEmpty()) {
+                throw new IllegalArgumentException("Address cannot be null or empty");
+            }
+            this.address = address.trim();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to set address: " + e.getMessage(), e);
         }
     }
 
@@ -119,9 +170,12 @@ public class User {
 
     public void setCredit_points(int credit_points) {
         try {
+            if (credit_points < 0) {
+                throw new IllegalArgumentException("Credit points cannot be negative");
+            }
             this.credit_points = credit_points;
-        } catch (Exception e) {
-            System.out.println("Error setting credit points: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to set credit points: " + e.getMessage(), e);
         }
     }
 
@@ -130,11 +184,7 @@ public class User {
     }
 
     public void setIs_verified(boolean is_verified) {
-        try {
-            this.is_verified = is_verified;
-        } catch (Exception e) {
-            System.out.println("Error setting verification: " + e.getMessage());
-        }
+        this.is_verified = is_verified;
     }
 
     public float getAverage_rating() {
@@ -143,9 +193,12 @@ public class User {
 
     public void setAverage_rating(float average_rating) {
         try {
+            if (average_rating < 0.0f || average_rating > 5.0f) {
+                throw new IllegalArgumentException("Average rating must be between 0.0 and 5.0");
+            }
             this.average_rating = average_rating;
-        } catch (Exception e) {
-            System.out.println("Error setting average rating: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to set average rating: " + e.getMessage(), e);
         }
     }
 
@@ -158,62 +211,88 @@ public class User {
     }
 
     public List<Transaction> getTransactions_as_buyer() {
-        return transactions_as_buyer;
+
+        return new ArrayList<>(transactions_as_buyer);
     }
 
     public List<Transaction> getTransactions_as_seller() {
-        return transactions_as_seller;
+
+        return new ArrayList<>(transactions_as_seller);
     }
 
     public void setTransactions_as_buyer(List<Transaction> transactions_as_buyer) {
         try {
-            this.transactions_as_buyer = transactions_as_buyer;
-        } catch (Exception e) {
-            System.out.println("Error setting buyer transactions: " + e.getMessage());
+            if (transactions_as_buyer == null) {
+                throw new IllegalArgumentException("Buyer transactions list cannot be null");
+            }
+            this.transactions_as_buyer = new ArrayList<>(transactions_as_buyer);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to set buyer transactions: " + e.getMessage(), e);
         }
     }
 
     public void setTransactions_as_seller(List<Transaction> transactions_as_seller) {
         try {
-            this.transactions_as_seller = transactions_as_seller;
-        } catch (Exception e) {
-            System.out.println("Error setting seller transactions: " + e.getMessage());
+            if (transactions_as_seller == null) {
+                throw new IllegalArgumentException("Seller transactions list cannot be null");
+            }
+            this.transactions_as_seller = new ArrayList<>(transactions_as_seller);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to set seller transactions: " + e.getMessage(), e);
         }
     }
 
     public void addCreditPoints(int points) {
         try {
+            if (points <= 0) {
+                throw new IllegalArgumentException("Credit points to add must be positive");
+            }
             this.credit_points += points;
-        } catch (Exception e) {
-            System.out.println("Error adding credit points: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to add credit points: " + e.getMessage(), e);
+        } catch (ArithmeticException e) {
+            throw new ArithmeticException("Credit points overflow occurred when adding " + points + " points");
         }
     }
 
     public boolean useCreditPoints(int points) {
         try {
-            if (points>0 && credit_points>=points) {
+            if (points <= 0) {
+                throw new IllegalArgumentException("Credit points to use must be positive");
+            }
+            if (credit_points >= points) {
                 this.credit_points -= points;
                 return true;
             }
-        } catch (Exception e) {
-            System.out.println("Error using credit points: " + e.getMessage());
+            return false;
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to use credit points: " + e.getMessage(), e);
         }
-        return false;
     }
 
     public void addTransactionAsBuyer(Transaction transaction) {
         try {
+            if (transaction == null) {
+                throw new IllegalArgumentException("Transaction cannot be null");
+            }
             this.transactions_as_buyer.add(transaction);
-        } catch (Exception e) {
-            System.out.println("Error adding buyer transaction: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to add buyer transaction: " + e.getMessage(), e);
+        } catch (UnsupportedOperationException e) {
+            throw new UnsupportedOperationException("Cannot add transaction to buyer list (list may be immutable)");
         }
     }
 
     public void addTransactionAsSeller(Transaction transaction) {
         try {
+            if (transaction == null) {
+                throw new IllegalArgumentException("Transaction cannot be null");
+            }
             this.transactions_as_seller.add(transaction);
-        } catch (Exception e) {
-            System.out.println("Error adding seller transaction: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to add seller transaction: " + e.getMessage(), e);
+        } catch (UnsupportedOperationException e) {
+            throw new UnsupportedOperationException("Cannot add transaction to seller list (list may be immutable)");
         }
     }
 
@@ -222,159 +301,167 @@ public class User {
             float totalreview = 0;
             int reviewcount = 0;
             for (int i = 0; i < transactions_as_seller.size(); i++) {
-                if (transactions_as_seller.get(i) != null &&
-                        transactions_as_seller.get(i).getSeller_review() != null) {
-                    totalreview += transactions_as_seller.get(i).getSeller_review().getRating();
+                Transaction transaction = transactions_as_seller.get(i);
+                if (transaction != null && transaction.getSeller_review() != null) {
+                    totalreview += transaction.getSeller_review().getRating();
                     reviewcount++;
                 }
             }
-            if(reviewcount>0) {
+            if (reviewcount > 0) {
                 average_rating = totalreview / reviewcount;
+                // Validate the calculated rating
+                if (average_rating < 0.0f || average_rating > 5.0f) {
+                    throw new IllegalStateException("Calculated average rating " + average_rating + " is outside valid range 0.0-5.0");
+                }
                 return average_rating;
             }
-        } catch (Exception e) {
-            System.out.println("Error calculating average rating: " + e.getMessage());
+            return 0.0f;
+        } catch (ArithmeticException e) {
+            throw new ArithmeticException("Error calculating average rating: division by zero or overflow");
+        } catch (NullPointerException e) {
+            throw new NullPointerException("Null reference encountered while calculating average rating");
         }
-        return 0.0f;
     }
 
     public int getTotalTransactions() {
         try {
-            return transactions_as_seller.size()+transactions_as_buyer.size();
-        } catch (Exception e) {
-            System.out.println("Error getting total transactions: " + e.getMessage());
-            return 0;
+            return transactions_as_seller.size() + transactions_as_buyer.size();
+        } catch (ArithmeticException e) {
+            throw new ArithmeticException("Integer overflow when calculating total transactions");
         }
     }
 
-    public float getTotalSpent(){
-        float total=0;
+    public float getTotalSpent() {
         try {
-            for(int i=0;i<transactions_as_buyer.size();i++){
-                if(transactions_as_buyer.get(i)!=null &&
-                        transactions_as_buyer.get(i).getItem()!=null) {
-                    total+=transactions_as_buyer.get(i).getItem().getPrice();
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("Error calculating total spent: " + e.getMessage());
-        }
-        return total;
-    }
-
-    public float getTotalEarned(){
-        float total=0;
-        try {
-            for(int i=0;i<transactions_as_seller.size();i++){
-                if(transactions_as_seller.get(i)!=null &&
-                        transactions_as_seller.get(i).getItem()!=null) {
-                    total+=transactions_as_seller.get(i).getItem().getPrice();
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("Error calculating total earned: " + e.getMessage());
-        }
-        return total;
-    }
-
-    public boolean hasTransactionHistory(){
-        try {
-            if(transactions_as_seller.isEmpty() && transactions_as_buyer.isEmpty()){
-                return false;
-            }
-            else{
-                return true;
-            }
-        } catch (Exception e) {
-            System.out.println("Error checking transaction history: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public List<Transaction> getRecentTransactions(int count){
-        List<Transaction> recent = new ArrayList<>();
-        try {
-            List<Transaction> allTransactions = new ArrayList<>();
-            allTransactions.addAll(transactions_as_buyer);
-            allTransactions.addAll(transactions_as_seller);
-            int limit = Math.min(count, allTransactions.size());
-            for(int i=0; i<limit; i++){
-                recent.add(allTransactions.get(i));
-            }
-        } catch (Exception e) {
-            System.out.println("Error getting recent transactions: " + e.getMessage());
-        }
-        return recent;
-    }
-
-    public void updateProfile(String name,String phone,String address){
-        try {
-            this.name = name;
-            this.phone = phone;
-            this.address = address;
-        } catch (Exception e) {
-            System.out.println("Error updating profile: " + e.getMessage());
-        }
-    }
-
-    public void verifyCNIC(){
-        try {
-            this.is_verified = true;
-        } catch (Exception e) {
-            System.out.println("Error verifying CNIC: " + e.getMessage());
-        }
-    }
-
-    public float getBuyerRating(){
-        float totalreview = 0;
-        int reviewcount = 0;
-        float average=0.0f;
-        try {
+            float total = 0;
             for (int i = 0; i < transactions_as_buyer.size(); i++) {
-                if (transactions_as_buyer.get(i)!=null &&
-                        transactions_as_buyer.get(i).getBuyer_review() != null) {
-                    totalreview += transactions_as_buyer.get(i).getBuyer_review().getRating();
-                    reviewcount++;
+                Transaction transaction = transactions_as_buyer.get(i);
+                if (transaction != null && transaction.getItem() != null) {
+                    total += transaction.getItem().getPrice();
                 }
             }
-            if(reviewcount>0) {
-                average = totalreview / reviewcount;
-                return average;
+            if (Float.isInfinite(total) || Float.isNaN(total)) {
+                throw new ArithmeticException("Total spent calculation resulted in invalid floating point value");
             }
-        } catch (Exception e) {
-            System.out.println("Error calculating buyer rating: " + e.getMessage());
+            return total;
+        } catch (NullPointerException e) {
+            throw new NullPointerException("Null transaction or item encountered while calculating total spent");
         }
-        return 0.0f;
     }
 
-    public float getSellerRating(){
-        float totalreview = 0;
-        int reviewcount = 0;
-        float average=0.0f;
+    public float getTotalEarned() {
         try {
+            float total = 0;
             for (int i = 0; i < transactions_as_seller.size(); i++) {
-                if (transactions_as_seller.get(i)!=null &&
-                        transactions_as_seller.get(i).getSeller_review() != null) {
-                    totalreview += transactions_as_seller.get(i).getSeller_review().getRating();
+                Transaction transaction = transactions_as_seller.get(i);
+                if (transaction != null && transaction.getItem() != null) {
+                    total += transaction.getItem().getPrice();
+                }
+            }
+            if (Float.isInfinite(total) || Float.isNaN(total)) {
+                throw new ArithmeticException("Total earned calculation resulted in invalid floating point value");
+            }
+            return total;
+        } catch (NullPointerException e) {
+            throw new NullPointerException("Null transaction or item encountered while calculating total earned");
+        }
+    }
+
+    public boolean hasTransactionHistory() {
+        try {
+            return !(transactions_as_seller.isEmpty() && transactions_as_buyer.isEmpty());
+        } catch (NullPointerException e) {
+            throw new IllegalStateException("Transaction lists are not properly initialized");
+        }
+    }
+
+
+    public void updateProfile(String name, String phone, String address) {
+        try {
+            if (name == null || name.trim().isEmpty()) {
+                throw new IllegalArgumentException("Name cannot be null or empty");
+            }
+            if (phone == null || phone.trim().isEmpty()) {
+                throw new IllegalArgumentException("Phone cannot be null or empty");
+            }
+            if (address == null || address.trim().isEmpty()) {
+                throw new IllegalArgumentException("Address cannot be null or empty");
+            }
+
+            this.name = name.trim();
+            this.phone = phone.trim();
+            this.address = address.trim();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to update profile: " + e.getMessage(), e);
+        }
+    }
+
+    public void verifyCNIC() {
+        this.is_verified = true;
+    }
+
+    public float getBuyerRating() {
+        try {
+            float totalreview = 0;
+            int reviewcount = 0;
+            float average = 0.0f;
+            for (int i = 0; i < transactions_as_buyer.size(); i++) {
+                Transaction transaction = transactions_as_buyer.get(i);
+                if (transaction != null && transaction.getBuyer_review() != null) {
+                    totalreview += transaction.getBuyer_review().getRating();
                     reviewcount++;
                 }
             }
-            if(reviewcount>0) {
+            if (reviewcount > 0) {
                 average = totalreview / reviewcount;
+                // Validate the calculated rating
+                if (average < 0.0f || average > 5.0f) {
+                    throw new IllegalStateException("Calculated buyer rating " + average + " is outside valid range 0.0-5.0");
+                }
                 return average;
             }
-        } catch (Exception e) {
-            System.out.println("Error calculating seller rating: " + e.getMessage());
+            return 0.0f;
+        } catch (ArithmeticException e) {
+            throw new ArithmeticException("Error calculating buyer rating: division by zero or overflow");
+        } catch (NullPointerException e) {
+            throw new NullPointerException("Null reference encountered while calculating buyer rating");
         }
-        return 0.0f;
+    }
+
+    public float getSellerRating() {
+        try {
+            float totalreview = 0;
+            int reviewcount = 0;
+            float average = 0.0f;
+            for (int i = 0; i < transactions_as_seller.size(); i++) {
+                Transaction transaction = transactions_as_seller.get(i);
+                if (transaction != null && transaction.getSeller_review() != null) {
+                    totalreview += transaction.getSeller_review().getRating();
+                    reviewcount++;
+                }
+            }
+            if (reviewcount > 0) {
+                average = totalreview / reviewcount;
+                // Validate the calculated rating
+                if (average < 0.0f || average > 5.0f) {
+                    throw new IllegalStateException("Calculated seller rating " + average + " is outside valid range 0.0-5.0");
+                }
+                return average;
+            }
+            return 0.0f;
+        } catch (ArithmeticException e) {
+            throw new ArithmeticException("Error calculating seller rating: division by zero or overflow");
+        } catch (NullPointerException e) {
+            throw new NullPointerException("Null reference encountered while calculating seller rating");
+        }
     }
 
     @Override
     public String toString() {
         try {
-            return "ID: "+getUser_id()+" Name: "+getName()+" Email: "+getEmail()+" Phone: "+getPhone()+" Credit points: "+getCredit_points()+" rating: "+getAverage_rating()+" Verified: "+isIs_verified();
+            return "ID: " + getUser_id() + " Name: " + getName() + " Email: " + getEmail() + " Phone: " + getPhone() + " Credit points: " + getCredit_points() + " rating: " + getAverage_rating() + " Verified: " + isIs_verified();
         } catch (Exception e) {
-            return "Error displaying user";
+            return "Error generating string representation: " + e.getMessage();
         }
     }
 }

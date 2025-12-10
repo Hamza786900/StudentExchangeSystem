@@ -2,11 +2,12 @@ package com.studentexchange.models;
 
 import com.studentexchange.enums.Category;
 import com.studentexchange.enums.GradeLevel;
+
 import java.util.Date;
 
 public abstract class Item {
     private String item_id;
-    private static int counter=0;
+    private static int counter = 0;
     private String title;
     private String description;
     private User uploader;
@@ -18,18 +19,46 @@ public abstract class Item {
 
     public Item(String title, User uploader, String description, Category category, GradeLevel grade, String subject) {
         try {
+            // Validate constructor parameters
+            if (title == null || title.trim().isEmpty()) {
+                throw new IllegalArgumentException("Title cannot be null or empty");
+            }
+            if (uploader == null) {
+                throw new IllegalArgumentException("Uploader cannot be null");
+            }
+            if (description == null) {
+                throw new IllegalArgumentException("Description cannot be null");
+            }
+            if (category == null) {
+                throw new IllegalArgumentException("Category cannot be null");
+            }
+            if (grade == null) {
+                throw new IllegalArgumentException("Grade level cannot be null");
+            }
+            if (subject == null || subject.trim().isEmpty()) {
+                throw new IllegalArgumentException("Subject cannot be null or empty");
+            }
+
             counter++;
-            this.item_id = "ITEM_"+String.format("%03d",counter);
-            this.title = title;
-            this.description = description;
+            if (counter < 0) {
+                throw new IllegalStateException("Item counter overflow");
+            }
+
+            this.item_id = "ITEM_" + String.format("%03d", counter);
+            this.title = title.trim();
+            this.description = description.trim();
             this.uploader = uploader;
             this.upload_date = new Date();
             this.category = category;
             this.grade = grade;
-            this.subject = subject;
+            this.subject = subject.trim();
             this.views = 0;
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to create Item: " + e.getMessage());
+        } catch (IllegalStateException e) {
+            throw new IllegalStateException("Failed to create Item due to internal state error: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("Error creating Item: " + e.getMessage());
+            throw new RuntimeException("Unexpected error while creating Item: " + e.getMessage());
         }
     }
 
@@ -39,9 +68,12 @@ public abstract class Item {
 
     public void setTitle(String title) {
         try {
-            this.title = title;
-        } catch (Exception e) {
-            System.out.println("Error setting title: " + e.getMessage());
+            if (title == null || title.trim().isEmpty()) {
+                throw new IllegalArgumentException("Title cannot be null or empty");
+            }
+            this.title = title.trim();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to set title: " + e.getMessage());
         }
     }
 
@@ -51,9 +83,12 @@ public abstract class Item {
 
     public void setDescription(String description) {
         try {
-            this.description = description;
-        } catch (Exception e) {
-            System.out.println("Error setting description: " + e.getMessage());
+            if (description == null) {
+                throw new IllegalArgumentException("Description cannot be null");
+            }
+            this.description = description.trim();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to set description: " + e.getMessage());
         }
     }
 
@@ -63,9 +98,12 @@ public abstract class Item {
 
     public void setGrade(GradeLevel grade) {
         try {
+            if (grade == null) {
+                throw new IllegalArgumentException("Grade level cannot be null");
+            }
             this.grade = grade;
-        } catch (Exception e) {
-            System.out.println("Error setting grade: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to set grade: " + e.getMessage());
         }
     }
 
@@ -75,9 +113,12 @@ public abstract class Item {
 
     public void setSubject(String subject) {
         try {
-            this.subject = subject;
-        } catch (Exception e) {
-            System.out.println("Error setting subject: " + e.getMessage());
+            if (subject == null || subject.trim().isEmpty()) {
+                throw new IllegalArgumentException("Subject cannot be null or empty");
+            }
+            this.subject = subject.trim();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to set subject: " + e.getMessage());
         }
     }
 
@@ -87,9 +128,12 @@ public abstract class Item {
 
     public void setViews(int views) {
         try {
+            if (views < 0) {
+                throw new IllegalArgumentException("Views cannot be negative");
+            }
             this.views = views;
-        } catch (Exception e) {
-            System.out.println("Error setting views: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to set views: " + e.getMessage());
         }
     }
 
@@ -98,91 +142,159 @@ public abstract class Item {
     }
 
     public User getUploader() {
+        if (uploader == null) {
+            throw new IllegalStateException("Uploader is not set for this item");
+        }
         return uploader;
     }
 
     public Date getUpload_date() {
-        return upload_date;
+        if (upload_date == null) {
+            throw new IllegalStateException("Upload date is not set for this item");
+        }
+        return new Date(upload_date.getTime()); // Return defensive copy
     }
 
     public Category getCategory() {
+        if (category == null) {
+            throw new IllegalStateException("Category is not set for this item");
+        }
         return category;
     }
 
     public void setCategory(Category category) {
         try {
+            if (category == null) {
+                throw new IllegalArgumentException("Category cannot be null");
+            }
             this.category = category;
-        } catch (Exception e) {
-            System.out.println("Error setting category: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to set category: " + e.getMessage());
         }
     }
 
     public abstract String getDetails();
+
     public abstract boolean isAvailable();
+
     public abstract boolean matchesSearch(String keyword);
 
-    public void incrementViews(){
+    public void incrementViews() {
         try {
+            if (views == Integer.MAX_VALUE) {
+                throw new ArithmeticException("Cannot increment views: maximum integer value reached");
+            }
             this.views++;
-        } catch (Exception e) {
-            System.out.println("Error incrementing views: " + e.getMessage());
+        } catch (ArithmeticException e) {
+            throw new ArithmeticException("Failed to increment views: " + e.getMessage());
         }
     }
 
-    public void updateDetails(String title, String description){
+    public void updateDetails(String title, String description) {
         try {
-            this.title = title;
-            this.description = description;
-        } catch (Exception e) {
-            System.out.println("Error updating details: " + e.getMessage());
+            if (title == null || title.trim().isEmpty()) {
+                throw new IllegalArgumentException("Title cannot be null or empty when updating details");
+            }
+            if (description == null) {
+                throw new IllegalArgumentException("Description cannot be null when updating details");
+            }
+            this.title = title.trim();
+            this.description = description.trim();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to update details: " + e.getMessage());
         }
     }
 
-    public String getCategoryName(){
+    public String getCategoryName() {
         try {
-            if(this.category != null) {
+            if (this.category != null) {
                 return this.category.name();
             }
-        } catch (Exception e) {
-            System.out.println("Error getting category name: " + e.getMessage());
+            throw new IllegalStateException("Category is null, cannot get category name");
+        } catch (IllegalStateException e) {
+            throw new IllegalStateException("Failed to get category name: " + e.getMessage());
         }
-        return null;
     }
 
-    public String getGradeName(){
+    public String getGradeName() {
         try {
-            if(this.grade != null) {
+            if (this.grade != null) {
                 return this.grade.name();
             }
-        } catch (Exception e) {
-            System.out.println("Error getting grade name: " + e.getMessage());
+            throw new IllegalStateException("Grade is null, cannot get grade name");
+        } catch (IllegalStateException e) {
+            throw new IllegalStateException("Failed to get grade name: " + e.getMessage());
         }
-        return null;
     }
 
-    public String getSellerInfo(){
+    public String getSellerInfo() {
         try {
-            if(this.uploader != null){
-                return String.format("Name: %s, Rating: %.2f",
-                        uploader.getName(),
-                        uploader.getAverage_rating());
+            if (this.uploader != null) {
+                User uploader = this.uploader;
+                String name = uploader.getName();
+                float rating = uploader.getAverage_rating();
+
+                if (name == null || name.trim().isEmpty()) {
+                    throw new IllegalStateException("Uploader name is not valid");
+                }
+
+                if (Float.isNaN(rating) || Float.isInfinite(rating)) {
+                    throw new IllegalStateException("Uploader rating is not a valid number");
+                }
+
+                return String.format("Name: %s, Rating: %.2f", name, rating);
             }
+            return "No Seller Info";
+        } catch (NullPointerException e) {
+            throw new NullPointerException("Null reference encountered while getting seller info: " + e.getMessage());
+        } catch (IllegalStateException e) {
+            throw new IllegalStateException("Failed to get seller info: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("Error getting seller info: " + e.getMessage());
+            throw new RuntimeException("Unexpected error while getting seller info: " + e.getMessage());
         }
-        return "No Seller Info";
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         try {
-            return "Title: " + getTitle() +
-                    " Grade: " + getGrade() +
-                    " Subject: " + getSubject() +
-                    " Category: " + getCategory() +
-                    " Uploader: " + (getUploader()!=null?getUploader().getName():"N/A");
+            String title = getTitle();
+            GradeLevel grade = getGrade();
+            String subject = getSubject();
+            Category category = getCategory();
+            User uploader = getUploader();
+
+            if (title == null) {
+                throw new IllegalStateException("Title is null in toString()");
+            }
+            if (grade == null) {
+                throw new IllegalStateException("Grade is null in toString()");
+            }
+            if (subject == null) {
+                throw new IllegalStateException("Subject is null in toString()");
+            }
+            if (category == null) {
+                throw new IllegalStateException("Category is null in toString()");
+            }
+            if (uploader == null) {
+                throw new IllegalStateException("Uploader is null in toString()");
+            }
+
+            String uploaderName = uploader.getName();
+            if (uploaderName == null) {
+                uploaderName = "Unknown";
+            }
+
+            return "Title: " + title +
+                    " Grade: " + grade +
+                    " Subject: " + subject +
+                    " Category: " + category +
+                    " Uploader: " + uploaderName;
+        } catch (IllegalStateException e) {
+            return "Item [ID: " + (item_id != null ? item_id : "Unknown") +
+                    ", Error: " + e.getMessage() + "]";
         } catch (Exception e) {
-            return "Error displaying item";
+            return "Item [ID: " + (item_id != null ? item_id : "Unknown") +
+                    ", Error generating string representation: " + e.getMessage() + "]";
         }
     }
 }
