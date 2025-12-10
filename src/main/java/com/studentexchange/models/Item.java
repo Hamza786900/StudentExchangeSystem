@@ -253,48 +253,12 @@ public abstract class Item {
             throw new RuntimeException("Unexpected error while getting seller info: " + e.getMessage());
         }
     }
-
     @Override
     public String toString() {
-        try {
-            String title = getTitle();
-            GradeLevel grade = getGrade();
-            String subject = getSubject();
-            Category category = getCategory();
-            User uploader = getUploader();
-
-            if (title == null) {
-                throw new IllegalStateException("Title is null in toString()");
-            }
-            if (grade == null) {
-                throw new IllegalStateException("Grade is null in toString()");
-            }
-            if (subject == null) {
-                throw new IllegalStateException("Subject is null in toString()");
-            }
-            if (category == null) {
-                throw new IllegalStateException("Category is null in toString()");
-            }
-            if (uploader == null) {
-                throw new IllegalStateException("Uploader is null in toString()");
-            }
-
-            String uploaderName = uploader.getName();
-            if (uploaderName == null) {
-                uploaderName = "Unknown";
-            }
-
-            return "Title: " + title +
-                    " Grade: " + grade +
-                    " Subject: " + subject +
-                    " Category: " + category +
-                    " Uploader: " + uploaderName;
-        } catch (IllegalStateException e) {
-            return "Item [ID: " + (item_id != null ? item_id : "Unknown") +
-                    ", Error: " + e.getMessage() + "]";
-        } catch (Exception e) {
-            return "Item [ID: " + (item_id != null ? item_id : "Unknown") +
-                    ", Error generating string representation: " + e.getMessage() + "]";
-        }
+        return "Title: " + getTitle() +
+                " Grade: " + getGrade() +
+                " Subject: " + getSubject() +
+                " Category: " + getCategory() +
+                " Uploader: " + getUploader().getName();
     }
 }

@@ -371,21 +371,11 @@ public class Book extends ForSaleItem {
 
     @Override
     public String toString() {
-        try {
-            String superString = super.toString();
-            String author = getAuthor();
-            String edition = getEdition();
-            String publisher = getPublisher();
-            int pages = getPages();
-
-            return superString +
-                    " Author: " + (author != null ? author : "Unknown") +
-                    " Edition: " + (edition != null ? edition : "N/A") +
-                    " Publisher: " + (publisher != null ? publisher : "Unknown") +
-                    " Pages: " + pages +
-                    " is_hardcover: " + is_hardcover;
-        } catch (Exception e) {
-            return "Book [Error in toString(): " + e.getMessage() + "]";
-        }
+        return super.toString() +
+                " Author: " + getAuthor() +
+                " Edition: " + getEdition() +
+                " Publisher: " + getPublisher() +
+                " Pages: " + getPages() +
+                " is_hardcover: " + is_hardcover;
     }
 }

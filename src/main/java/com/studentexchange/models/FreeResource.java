@@ -505,24 +505,14 @@ public class FreeResource extends Item {
 
     @Override
     public String toString() {
-        try {
-            if (is_university_paper) {
-                String uni = getUniversity();
-                String course = getCourse_code();
-                int yr = getYear();
-                String sem = getSemester();
-                String exam = getExam_type();
-
-                return "University: " + (uni != null ? uni : "Unknown") +
-                        " Course code: " + (course != null ? course : "N/A") +
-                        " Year: " + yr +
-                        " Semester: " + (sem != null ? sem : "N/A") +
-                        " exam type: " + (exam != null ? exam : "N/A") +
-                        " is official: " + isIs_official();
-            }
-            return super.toString() + " [Free Resource]";
-        } catch (Exception e) {
-            return "FreeResource [Error in toString(): " + e.getMessage() + "]";
+        if (is_university_paper) {
+            return "University: " + getUniversity() +
+                    " Course code: " + getCourse_code() +
+                    " Year: " + getYear() +
+                    " Semester: " + getSemester() +
+                    " exam type: " + getExam_type() +
+                    " is official: " + isIs_official();
         }
+        return super.toString() + " [Free Resource]";
     }
 }

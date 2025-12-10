@@ -359,25 +359,11 @@ public class Review {
 
     @Override
     public String toString() {
-        try {
-            String reviewId = getReview_id();
-            int currentRating = getRating();
-            String currentComment = getComment();
-            Date reviewDate = getReview_date();
-            String reviewedUserName = getReviewed_user().getName();
-            String reviewerUserName = getReviewer_user().getName();
-
-            return String.format(
-                    "ID: %s | Rating: %d/5 | Comment: %s | Date: %s | Reviewed: %s | Reviewer: %s",
-                    reviewId,
-                    currentRating,
-                    currentComment.length() > 50 ? currentComment.substring(0, 50) + "..." : currentComment,
-                    reviewDate,
-                    reviewedUserName != null ? reviewedUserName : "Unknown",
-                    reviewerUserName != null ? reviewerUserName : "Unknown"
-            );
-        } catch (Exception e) {
-            return "Review [Error in toString(): " + e.getMessage() + "]";
-        }
+        return "ID: " + getReview_id() +
+                " Rating: " + getRating() +
+                " Comment: " + getComment() +
+                " Date: " + getReview_date() +
+                " Reviewed_user: " + getReviewed_user().getName() +
+                " Reviewer_user: " + getReviewer_user().getName();
     }
 }

@@ -362,20 +362,11 @@ public class Notes extends ForSaleItem {
 
     @Override
     public String toString() {
-        try {
-            String baseString = super.toString();
-            String format = getFormat_type();
-            int pageCount = getPages();
-            String qualityDesc = getQualityDescription();
-
-            return baseString +
-                    " | Format: " + format +
-                    " | Pages: " + pageCount +
-                    " | Quality: " + qualityDesc +
-                    " | Handwritten: " + (is_handwritten ? "Yes" : "No") +
-                    " | Scanned: " + (is_scanned ? "Yes" : "No");
-        } catch (Exception e) {
-            return "Notes [Error in toString(): " + e.getMessage() + "]";
-        }
+        return super.toString() +
+                " Format: " + getFormat_type() +
+                " Pages: " + getPages() +
+                " Quality: " + getQuality() +
+                " Handwritten: " + isIs_handwritten() +
+                " Scanned: " + isIs_scanned();
     }
 }
