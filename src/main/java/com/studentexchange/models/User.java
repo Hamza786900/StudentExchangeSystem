@@ -22,7 +22,7 @@ public class User {
 
     public User(String name, String cnic, String email, String password, String phone, String address) {
         try {
-            // Validate constructor parameters
+
             if (name == null || name.trim().isEmpty()) {
                 throw new IllegalArgumentException("Name cannot be null or empty");
             }
@@ -60,7 +60,7 @@ public class User {
             this.transactions_as_buyer = new ArrayList<>();
             this.transactions_as_seller = new ArrayList<>();
         } catch (IllegalArgumentException e) {
-            // Re-throw with additional context
+
             throw new IllegalArgumentException("Failed to create User: " + e.getMessage(), e);
         }
     }
@@ -309,7 +309,7 @@ public class User {
             }
             if (reviewcount > 0) {
                 average_rating = totalreview / reviewcount;
-                // Validate the calculated rating
+
                 if (average_rating < 0.0f || average_rating > 5.0f) {
                     throw new IllegalStateException("Calculated average rating " + average_rating + " is outside valid range 0.0-5.0");
                 }

@@ -19,7 +19,6 @@ public abstract class Item {
 
     public Item(String title, User uploader, String description, Category category, GradeLevel grade, String subject) {
         try {
-            // Validate constructor parameters
             if (title == null || title.trim().isEmpty()) {
                 throw new IllegalArgumentException("Title cannot be null or empty");
             }
@@ -152,7 +151,7 @@ public abstract class Item {
         if (upload_date == null) {
             throw new IllegalStateException("Upload date is not set for this item");
         }
-        return new Date(upload_date.getTime()); // Return defensive copy
+        return new Date(upload_date.getTime());
     }
 
     public Category getCategory() {
