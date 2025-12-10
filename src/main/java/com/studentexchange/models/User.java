@@ -51,7 +51,7 @@ public class User {
             this.cnic = cnic.trim();
             this.email = email.trim();
             this.password = password.trim();
-            this.phone = phone.trim();
+            setPhone(phone);
             this.address = address.trim();
             this.registration_date = new Date();
             this.credit_points = 0;
@@ -140,12 +140,26 @@ public class User {
             if (phone == null || phone.trim().isEmpty()) {
                 throw new IllegalArgumentException("Phone cannot be null or empty");
             }
-            if(phone.length()<10 || phone.length()>11){
-                throw new IllegalArgumentException("Phone must be at least 10 characters long");
+
+            String trimmedPhone = phone.trim();
+
+            // Remove common separators
+            String cleanPhone = trimmedPhone.replaceAll("[\\s\\-()]", "");
+
+            // Check length
+            if (cleanPhone.length() < 10 || cleanPhone.length() > 12) {
+                throw new IllegalArgumentException("Phone number must be 10 to 12 digits (e.g., 03001234567 or 923001234567)");
             }
-            this.phone = phone.trim();
+
+            // Check if it's all digits
+            if (!cleanPhone.matches("\\d+")) {
+                throw new IllegalArgumentException("Phone number can only contain digits (0-9)");
+            }
+
+            this.phone = cleanPhone;
+
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Failed to set phone: " + e.getMessage(), e);
+            throw new IllegalArgumentException("Failed to set phone: " + e.getMessage());
         }
     }
 
@@ -389,7 +403,7 @@ public class User {
             }
 
             this.name = name.trim();
-            this.phone = phone.trim();
+            setPhone(phone);
             this.address = address.trim();
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Failed to update profile: " + e.getMessage(), e);
