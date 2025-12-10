@@ -151,7 +151,7 @@ public abstract class Item {
         if (upload_date == null) {
             throw new IllegalStateException("Upload date is not set for this item");
         }
-        return new Date(upload_date.getTime()); // Return defensive copy
+        return new Date(upload_date.getTime());
     }
 
     public Category getCategory() {
