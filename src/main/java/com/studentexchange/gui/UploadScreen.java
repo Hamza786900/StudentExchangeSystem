@@ -17,7 +17,11 @@ public class UploadScreen {
 
     public UploadScreen(MainApp mainApp) {
         this.mainApp = mainApp;
-        createView();
+        try {
+            createView();
+        } catch (Exception e) {
+            showError("Failed to initialize upload screen.", e);
+        }
     }
 
     private void createView() {
@@ -90,16 +94,20 @@ public class UploadScreen {
         grid.add(marketPriceField, 1, 5);
 
         typeBox.setOnAction(e -> {
-            if (typeBox.getValue().equals("Free Resource")) {
-                priceField.setDisable(true);
-                marketPriceField.setDisable(true);
-                priceField.setText("0");
-                marketPriceField.setText("0");
-            } else {
-                priceField.setDisable(false);
-                marketPriceField.setDisable(false);
-                priceField.setText("");
-                marketPriceField.setText("");
+            try {
+                if (typeBox.getValue().equals("Free Resource")) {
+                    priceField.setDisable(true);
+                    marketPriceField.setDisable(true);
+                    priceField.setText("0");
+                    marketPriceField.setText("0");
+                } else {
+                    priceField.setDisable(false);
+                    marketPriceField.setDisable(false);
+                    priceField.setText("");
+                    marketPriceField.setText("");
+                }
+            } catch (Exception ex) {
+                showError("Failed to handle type selection.", ex);
             }
         });
 
@@ -167,17 +175,32 @@ public class UploadScreen {
                 alert.setHeaderText(null);
                 alert.setContentText("Please enter valid prices!");
                 alert.showAndWait();
+            } catch (Exception ex) {
+                showError("Upload failed due to unexpected error.", ex);
             }
         });
 
         Button backBtn = new Button("Back");
         backBtn.setPrefSize(120, 35);
         backBtn.setStyle("-fx-background-color: #757575; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
-        backBtn.setOnAction(e -> mainApp.showDashboard());
+        backBtn.setOnAction(e -> {
+            try {
+                mainApp.showDashboard();
+            } catch (Exception ex) {
+                showError("Failed to go back.", ex);
+            }
+        });
 
         buttonBox.getChildren().addAll(uploadBtn, backBtn);
-
         view.getChildren().addAll(title, grid, buttonBox);
+    }
+
+    private void showError(String message, Exception e) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message + (e != null ? "\nDetails: " + e.getMessage() : ""));
+        alert.showAndWait();
     }
 
     public VBox getView() {

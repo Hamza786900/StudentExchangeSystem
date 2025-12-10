@@ -13,41 +13,56 @@ public class WelcomeScreen {
 
     public WelcomeScreen(MainApp mainApp) {
         this.mainApp = mainApp;
-        createView();
+        try {
+            createView();
+        } catch (Exception e) {
+            showError("Failed to initialize welcome screen.", e);
+        }
     }
 
     private void createView() {
-        view = new VBox(20);
+        view = new VBox(30); // spacing increased for visual separation
         view.setAlignment(Pos.CENTER);
         view.setStyle("-fx-background-color: #F0F0F5;");
 
-        Label title = new Label("BAZAAR");
+        // Heading
+        Label title = new Label("STUDENT BAZAAR");
         title.setFont(Font.font("Arial", 40));
         title.setStyle("-fx-font-weight: bold;");
 
-        Label subtitle = new Label("Student Book Exchange Platform");
-        subtitle.setFont(Font.font("Arial", 18));
-
-        Label desc1 = new Label("Buy and sell textbooks at affordable prices");
-        desc1.setFont(Font.font("Arial", 14));
-
-        Label desc2 = new Label("Share notes and past papers");
-        desc2.setFont(Font.font("Arial", 14));
-
-        Label desc3 = new Label("Earn credit points for contributions");
-        desc3.setFont(Font.font("Arial", 14));
-
+        // Buttons
         Button loginBtn = new Button("Login");
         loginBtn.setPrefSize(200, 40);
         loginBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;");
-        loginBtn.setOnAction(e -> mainApp.showLoginScreen());
+        loginBtn.setOnAction(e -> {
+            try {
+                mainApp.showLoginScreen();
+            } catch (Exception ex) {
+                showError("Failed to open login screen.", ex);
+            }
+        });
 
         Button registerBtn = new Button("Register");
         registerBtn.setPrefSize(200, 40);
         registerBtn.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;");
-        registerBtn.setOnAction(e -> mainApp.showRegisterScreen());
+        registerBtn.setOnAction(e -> {
+            try {
+                mainApp.showRegisterScreen();
+            } catch (Exception ex) {
+                showError("Failed to open register screen.", ex);
+            }
+        });
 
-        view.getChildren().addAll(title, subtitle, desc1, desc2, desc3, loginBtn, registerBtn);
+        // Add only heading and buttons to the view
+        view.getChildren().addAll(title, loginBtn, registerBtn);
+    }
+
+    private void showError(String message, Exception e) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message + (e != null ? "\nDetails: " + e.getMessage() : ""));
+        alert.showAndWait();
     }
 
     public VBox getView() {

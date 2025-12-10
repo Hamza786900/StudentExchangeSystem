@@ -16,7 +16,11 @@ public class LoginScreen {
 
     public LoginScreen(MainApp mainApp) {
         this.mainApp = mainApp;
-        createView();
+        try {
+            createView();
+        } catch (Exception e) {
+            showError("Failed to initialize login screen.", e);
+        }
     }
 
     private void createView() {
@@ -25,8 +29,9 @@ public class LoginScreen {
         view.setPadding(new Insets(50));
         view.setStyle("-fx-background-color: #F0F0F5;");
 
-        Label title = new Label("Login to Your Account");
-        title.setFont(Font.font("Arial", 28));
+        // Updated heading
+        Label title = new Label("STUDENT BAZAAR");
+        title.setFont(Font.font("Arial", 36));
         title.setStyle("-fx-font-weight: bold;");
 
         GridPane grid = new GridPane();
@@ -58,35 +63,58 @@ public class LoginScreen {
         loginBtn.setPrefSize(120, 35);
         loginBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
         loginBtn.setOnAction(e -> {
-            String email = emailField.getText();
-            String password = passField.getText();
+            try {
+                String email = emailField.getText();
+                String password = passField.getText();
 
-            User user = MainApp.getSystem().login(email, password);
-            if (user != null) {
-                MainApp.setCurrentUser(user);
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Success");
-                alert.setHeaderText(null);
-                alert.setContentText("Welcome " + user.getName() + "!");
-                alert.showAndWait();
-                mainApp.showDashboard();
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText(null);
-                alert.setContentText("Wrong email or password!");
-                alert.showAndWait();
+                User user = MainApp.getSystem().login(email, password);
+                if (user != null) {
+                    MainApp.setCurrentUser(user);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Success");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Welcome " + user.getName() + "!");
+                    alert.showAndWait();
+                    mainApp.showDashboard();
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Wrong email or password!");
+                    alert.showAndWait();
+                }
+            } catch (Exception ex) {
+                showError("Login failed.", ex);
             }
         });
 
         Button backBtn = new Button("Back");
         backBtn.setPrefSize(120, 35);
         backBtn.setStyle("-fx-background-color: #757575; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
-        backBtn.setOnAction(e -> mainApp.showWelcomeScreen());
+        backBtn.setOnAction(e -> {
+            try {
+                mainApp.showWelcomeScreen();
+            } catch (Exception ex) {
+                showError("Failed to go back.", ex);
+            }
+        });
 
         buttonBox.getChildren().addAll(loginBtn, backBtn);
 
+        // Only heading, form, and buttons remain
         view.getChildren().addAll(title, grid, buttonBox);
+    }
+
+    private void showError(String message) {
+        showError(message, null);
+    }
+
+    private void showError(String message, Exception e) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message + (e != null ? "\nDetails: " + e.getMessage() : ""));
+        alert.showAndWait();
     }
 
     public VBox getView() {

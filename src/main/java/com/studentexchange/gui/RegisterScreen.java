@@ -16,7 +16,11 @@ public class RegisterScreen {
 
     public RegisterScreen(MainApp mainApp) {
         this.mainApp = mainApp;
-        createView();
+        try {
+            createView();
+        } catch (Exception e) {
+            showError("Failed to initialize registration screen.", e);
+        }
     }
 
     private void createView() {
@@ -92,47 +96,68 @@ public class RegisterScreen {
         registerBtn.setPrefSize(120, 35);
         registerBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
         registerBtn.setOnAction(e -> {
-            String name = nameField.getText();
-            String cnic = cnicField.getText();
-            String email = emailField.getText();
-            String password = passField.getText();
-            String phone = phoneField.getText();
-            String address = addressField.getText();
+            try {
+                String name = nameField.getText();
+                String cnic = cnicField.getText();
+                String email = emailField.getText();
+                String password = passField.getText();
+                String phone = phoneField.getText();
+                String address = addressField.getText();
 
-            if (name.isEmpty() || cnic.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText(null);
-                alert.setContentText("Please fill all required fields!");
-                alert.showAndWait();
-                return;
-            }
+                if (name.isEmpty() || cnic.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Please fill all required fields!");
+                    alert.showAndWait();
+                    return;
+                }
 
-            User user = MainApp.getSystem().registerUser(name, cnic, email, password, phone, address);
-            if (user != null) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Success");
-                alert.setHeaderText(null);
-                alert.setContentText("Registration successful! Please login.");
-                alert.showAndWait();
-                mainApp.showLoginScreen();
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText(null);
-                alert.setContentText("Registration failed! Email or CNIC already exists.");
-                alert.showAndWait();
+                User user = MainApp.getSystem().registerUser(name, cnic, email, password, phone, address);
+                if (user != null) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Success");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Registration successful! Please login.");
+                    alert.showAndWait();
+                    mainApp.showLoginScreen();
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Registration failed! Email or CNIC already exists.");
+                    alert.showAndWait();
+                }
+            } catch (Exception ex) {
+                showError("Registration failed due to unexpected error.", ex);
             }
         });
 
         Button backBtn = new Button("Back");
         backBtn.setPrefSize(120, 35);
         backBtn.setStyle("-fx-background-color: #757575; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
-        backBtn.setOnAction(e -> mainApp.showWelcomeScreen());
+        backBtn.setOnAction(e -> {
+            try {
+                mainApp.showWelcomeScreen();
+            } catch (Exception ex) {
+                showError("Failed to go back.", ex);
+            }
+        });
 
         buttonBox.getChildren().addAll(registerBtn, backBtn);
-
         view.getChildren().addAll(title, grid, buttonBox);
+    }
+
+    private void showError(String message) {
+        showError(message, null);
+    }
+
+    private void showError(String message, Exception e) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message + (e != null ? "\nDetails: " + e.getMessage() : ""));
+        alert.showAndWait();
     }
 
     public VBox getView() {
