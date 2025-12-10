@@ -22,12 +22,10 @@ public class Catalog {
     }
 
     public List<Item> getItems() {
-        // Return defensive copy
         return new ArrayList<>(items);
     }
 
     public Map<Category, Integer> getCategories() {
-        // Return defensive copy
         return new HashMap<>(categories);
     }
 
@@ -35,7 +33,7 @@ public class Catalog {
         if (updated_date == null) {
             throw new IllegalStateException("Updated date is not set");
         }
-        return new Date(updated_date.getTime()); // Return defensive copy
+        return new Date(updated_date.getTime());
     }
 
     public void addItem(Item item) {
@@ -44,7 +42,6 @@ public class Catalog {
                 throw new IllegalArgumentException("Item cannot be null");
             }
 
-            // Check for duplicate item ID
             String itemId = item.getItem_id();
             for (Item existingItem : items) {
                 if (existingItem.getItem_id().equals(itemId)) {
@@ -52,7 +49,6 @@ public class Catalog {
                 }
             }
 
-            // Validate item has required fields
             if (item.getTitle() == null || item.getTitle().trim().isEmpty()) {
                 throw new IllegalArgumentException("Item title cannot be null or empty");
             }
@@ -173,7 +169,6 @@ public class Catalog {
                         results.add(item);
                     }
                 } catch (Exception e) {
-                    // Skip items that fail search
                     System.err.println("Error searching item: " + e.getMessage());
                 }
             }
@@ -189,7 +184,6 @@ public class Catalog {
         try {
             List<Item> filtered = new ArrayList<>();
 
-            // Validate price range if provided
             if (minPrice != null && minPrice < 0) {
                 throw new IllegalArgumentException("Minimum price cannot be negative");
             }
@@ -204,17 +198,14 @@ public class Catalog {
                 try {
                     boolean matches = true;
 
-                    // Filter by category
                     if (category != null && item.getCategory() != category) {
                         matches = false;
                     }
 
-                    // Filter by grade
                     if (grade != null && item.getGrade() != grade) {
                         matches = false;
                     }
 
-                    // Filter by subject
                     if (subject != null && !subject.trim().isEmpty()) {
                         String itemSubject = item.getSubject();
                         if (itemSubject == null || !itemSubject.toLowerCase().contains(subject.toLowerCase().trim())) {
@@ -222,7 +213,6 @@ public class Catalog {
                         }
                     }
 
-                    // Filter by price and condition for ForSaleItems
                     if (item instanceof ForSaleItem) {
                         ForSaleItem forSale = (ForSaleItem) item;
 
@@ -234,12 +224,10 @@ public class Catalog {
                             matches = false;
                         }
 
-                        // Filter by condition
                         if (condition != null && forSale.getCondition() != condition) {
                             matches = false;
                         }
                     } else {
-                        // Free resources don't have price or condition
                         if (minPrice != null || maxPrice != null || condition != null) {
                             matches = false;
                         }
@@ -250,7 +238,6 @@ public class Catalog {
                     }
 
                 } catch (Exception e) {
-                    // Skip items that fail filtering
                     System.err.println("Error filtering item: " + e.getMessage());
                 }
             }
@@ -289,7 +276,7 @@ public class Catalog {
                             float priceB = (b instanceof ForSaleItem) ? ((ForSaleItem) b).getPrice() : 0;
                             return Float.compare(priceA, priceB);
                         } catch (Exception e) {
-                            return 0; // Maintain order if comparison fails
+                            return 0;
                         }
                     });
                     break;
@@ -301,7 +288,7 @@ public class Catalog {
                             float priceB = (b instanceof ForSaleItem) ? ((ForSaleItem) b).getPrice() : 0;
                             return Float.compare(priceB, priceA);
                         } catch (Exception e) {
-                            return 0; // Maintain order if comparison fails
+                            return 0;
                         }
                     });
                     break;
@@ -311,7 +298,7 @@ public class Catalog {
                         try {
                             return b.getUpload_date().compareTo(a.getUpload_date());
                         } catch (Exception e) {
-                            return 0; // Maintain order if comparison fails
+                            return 0;
                         }
                     });
                     break;
@@ -321,7 +308,7 @@ public class Catalog {
                         try {
                             return a.getTitle().compareToIgnoreCase(b.getTitle());
                         } catch (Exception e) {
-                            return 0; // Maintain order if comparison fails
+                            return 0;
                         }
                     });
                     break;
@@ -331,7 +318,7 @@ public class Catalog {
                         try {
                             return Integer.compare(b.getViews(), a.getViews());
                         } catch (Exception e) {
-                            return 0; // Maintain order if comparison fails
+                            return 0;
                         }
                     });
                     break;
@@ -359,7 +346,6 @@ public class Catalog {
                         available.add(item);
                     }
                 } catch (Exception e) {
-                    // Skip items that fail availability check
                     System.err.println("Error checking item availability: " + e.getMessage());
                 }
             }
@@ -382,7 +368,6 @@ public class Catalog {
                         userItems.add(item);
                     }
                 } catch (Exception e) {
-                    // Skip items that fail user comparison
                     System.err.println("Error checking item uploader: " + e.getMessage());
                 }
             }
@@ -407,7 +392,6 @@ public class Catalog {
                         categoryItems.add(item);
                     }
                 } catch (Exception e) {
-                    // Skip items that fail category check
                     System.err.println("Error checking item category: " + e.getMessage());
                 }
             }
@@ -432,7 +416,6 @@ public class Catalog {
                         gradeItems.add(item);
                     }
                 } catch (Exception e) {
-                    // Skip items that fail grade check
                     System.err.println("Error checking item grade: " + e.getMessage());
                 }
             }
@@ -453,7 +436,6 @@ public class Catalog {
                         forSale.add((ForSaleItem) item);
                     }
                 } catch (Exception e) {
-                    // Skip items that fail type check
                     System.err.println("Error checking item type: " + e.getMessage());
                 }
             }
@@ -472,7 +454,6 @@ public class Catalog {
                         free.add((FreeResource) item);
                     }
                 } catch (Exception e) {
-                    // Skip items that fail type check
                     System.err.println("Error checking item type: " + e.getMessage());
                 }
             }
@@ -500,7 +481,6 @@ public class Catalog {
                         totalPrice += ((ForSaleItem) item).getPrice();
                         pricedItems++;
                     } catch (Exception e) {
-                        // Skip items with price errors
                     }
                 }
             }
@@ -510,7 +490,7 @@ public class Catalog {
             stats.put("Available Items", availableItems);
             stats.put("For Sale Items", forSaleItems);
             stats.put("Free Resources", freeResources);
-            stats.put("Categories", new HashMap<>(categories)); // Defensive copy
+            stats.put("Categories", new HashMap<>(categories));
             stats.put("Average Price", String.format("Rs. %.2f", averagePrice));
             stats.put("Last Updated", updated_date);
 
@@ -533,7 +513,6 @@ public class Catalog {
                         return item;
                     }
                 } catch (Exception e) {
-                    // Skip items with ID access errors
                     System.err.println("Error accessing item ID: " + e.getMessage());
                 }
             }
@@ -561,7 +540,7 @@ public class Catalog {
                 try {
                     return Integer.compare(b.getViews(), a.getViews());
                 } catch (Exception e) {
-                    return 0; // Maintain order if comparison fails
+                    return 0;
                 }
             });
 
@@ -589,7 +568,7 @@ public class Catalog {
                 try {
                     return b.getUpload_date().compareTo(a.getUpload_date());
                 } catch (Exception e) {
-                    return 0; // Maintain order if comparison fails
+                    return 0;
                 }
             });
 
@@ -609,18 +588,14 @@ public class Catalog {
                 throw new IllegalArgumentException("User cannot be null");
             }
 
-            // Simple recommendation algorithm: mix of popular and new items
             List<Item> recommendations = new ArrayList<>();
 
-            // Add popular items
             List<Item> popular = getPopularItems(5);
             recommendations.addAll(popular);
 
-            // Add new arrivals
             List<Item> newArrivals = getNewArrivals(5);
             recommendations.addAll(newArrivals);
 
-            // Remove duplicates
             Set<Item> uniqueItems = new LinkedHashSet<>(recommendations);
             return new ArrayList<>(uniqueItems);
 
@@ -641,7 +616,6 @@ public class Catalog {
                         categories.put(cat, categories.getOrDefault(cat, 0) + 1);
                     }
                 } catch (Exception e) {
-                    // Skip items with category errors
                     System.err.println("Error updating category for item: " + e.getMessage());
                 }
             }
@@ -674,7 +648,6 @@ public class Catalog {
                         return true;
                     }
                 } catch (Exception e) {
-                    // Skip items with ID access errors
                 }
             }
 

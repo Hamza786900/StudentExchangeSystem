@@ -28,7 +28,6 @@ public class Transaction {
 
     public Transaction(User buyer, User seller, ForSaleItem item, PaymentMethod payment_method) {
         try {
-            // Validate all parameters
             if (buyer == null) {
                 throw new IllegalArgumentException("Buyer cannot be null");
             }
@@ -42,17 +41,14 @@ public class Transaction {
                 throw new IllegalArgumentException("Payment method cannot be null");
             }
 
-            // Prevent buying from self
             if (buyer.equals(seller)) {
                 throw new IllegalArgumentException("Buyer and seller cannot be the same user");
             }
 
-            // Validate item availability
             if (!item.isAvailable()) {
                 throw new IllegalArgumentException("Item is not available for sale");
             }
 
-            // Validate item can be purchased
             if (!item.canBePurchased()) {
                 throw new IllegalArgumentException("Item cannot be purchased");
             }
@@ -77,8 +73,7 @@ public class Transaction {
             this.reviews_completed = false;
             this.credits_used = 0;
 
-            // Mark item as sold
-            //item.markAsSold(buyer, new Date());
+
 
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Failed to create Transaction: " + e.getMessage());
@@ -125,7 +120,6 @@ public class Transaction {
                 throw new IllegalArgumentException("Payment status cannot be null");
             }
 
-            // Validate state transitions
             if (this.payment_status == PaymentStatus.COMPLETED &&
                     payment_status != PaymentStatus.COMPLETED) {
                 throw new IllegalStateException("Cannot revert from COMPLETED payment status");
@@ -158,13 +152,11 @@ public class Transaction {
                 throw new IllegalArgumentException("Shipping status cannot be null");
             }
 
-            // Validate payment is completed before shipping
             if (payment_status != PaymentStatus.COMPLETED &&
                     shipping_status != ShippingStatus.NOT_SHIPPED) {
                 throw new IllegalStateException("Cannot update shipping status before payment completion");
             }
 
-            // Validate state transitions
             if (shipping_status == ShippingStatus.SHIPPED &&
                     this.shipping_status == ShippingStatus.DELIVERED) {
                 throw new IllegalStateException("Cannot revert from DELIVERED to SHIPPED");
@@ -177,12 +169,10 @@ public class Transaction {
 
             this.shipping_status = shipping_status;
 
-            // Update shipping date when first shipped
             if (shipping_status == ShippingStatus.SHIPPED && shipping_date == null) {
                 this.shipping_date = new Date();
             }
 
-            // Update delivery date when delivered
             if (shipping_status == ShippingStatus.DELIVERED && delivery_date == null) {
                 this.delivery_date = new Date();
             }
@@ -199,7 +189,6 @@ public class Transaction {
     }
 
     public void setReviews_completed(boolean reviews_completed) {
-        // This is calculated automatically, but allow manual setting for edge cases
         if (reviews_completed && (buyer_review == null || seller_review == null)) {
             throw new IllegalStateException("Cannot mark reviews as completed when reviews are missing");
         }
@@ -222,7 +211,6 @@ public class Transaction {
                 throw new IllegalStateException("Cannot change credits used after payment is completed");
             }
 
-            // Validate buyer has enough credits
             if (credits_used > 0 && buyer.getCredit_points() < credits_used) {
                 throw new IllegalArgumentException("Buyer does not have enough credit points");
             }
@@ -267,11 +255,11 @@ public class Transaction {
         if (transaction_date == null) {
             throw new IllegalStateException("Transaction date is not set");
         }
-        return new Date(transaction_date.getTime()); // Return defensive copy
+        return new Date(transaction_date.getTime());
     }
 
     public Date getShipping_date() {
-        return shipping_date != null ? new Date(shipping_date.getTime()) : null; // Return defensive copy
+        return shipping_date != null ? new Date(shipping_date.getTime()) : null;
     }
 
     public Review getBuyer_review() {
@@ -279,7 +267,7 @@ public class Transaction {
     }
 
     public Date getDelivery_date() {
-        return delivery_date != null ? new Date(delivery_date.getTime()) : null; // Return defensive copy
+        return delivery_date != null ? new Date(delivery_date.getTime()) : null;
     }
 
     public Review getSeller_review() {
@@ -300,7 +288,6 @@ public class Transaction {
                 throw new IllegalStateException("Cannot complete a failed payment. Please retry payment");
             }
 
-            // Validate item is still available (in case it was sold elsewhere)
             if (!item.isAvailable()) {
                 throw new IllegalStateException("Item is no longer available for purchase");
             }
@@ -308,7 +295,6 @@ public class Transaction {
             this.payment_method = method;
             this.payment_status = PaymentStatus.COMPLETED;
 
-            // Deduct credits if used
             if (credits_used > 0) {
                 boolean creditsDeducted = buyer.useCreditPoints(credits_used);
                 if (!creditsDeducted) {
@@ -335,7 +321,6 @@ public class Transaction {
                 throw new IllegalStateException("Cannot update shipping before payment completion");
             }
 
-            // Use the setter to maintain consistency
             setShipping_status(status);
 
         } catch (IllegalArgumentException e) {
@@ -372,17 +357,14 @@ public class Transaction {
                 throw new IllegalArgumentException("Review cannot be null");
             }
 
-            // Validate review is for the seller
             if (!review.getReviewed_user().equals(seller)) {
                 throw new IllegalStateException("Buyer review must be for the seller");
             }
 
-            // Validate review is by the buyer
             if (!review.getReviewer_user().equals(buyer)) {
                 throw new IllegalStateException("Review must be submitted by the buyer");
             }
 
-            // Validate transaction matches
             if (!review.getTransaction().equals(this)) {
                 throw new IllegalStateException("Review transaction must match this transaction");
             }
@@ -407,17 +389,14 @@ public class Transaction {
                 throw new IllegalArgumentException("Review cannot be null");
             }
 
-            // Validate review is for the buyer
             if (!review.getReviewed_user().equals(buyer)) {
                 throw new IllegalStateException("Seller review must be for the buyer");
             }
 
-            // Validate review is by the seller
             if (!review.getReviewer_user().equals(seller)) {
                 throw new IllegalStateException("Review must be submitted by the seller");
             }
 
-            // Validate transaction matches
             if (!review.getTransaction().equals(this)) {
                 throw new IllegalStateException("Review transaction must match this transaction");
             }
@@ -437,9 +416,8 @@ public class Transaction {
             if (buyer_review != null && seller_review != null) {
                 this.reviews_completed = true;
 
-                // Add credit points to both users for completing reviews
-                buyer.addCreditPoints(10); // Reward for completing review
-                seller.addCreditPoints(10); // Reward for completing review
+                buyer.addCreditPoints(10);
+                seller.addCreditPoints(10);
             }
         } catch (Exception e) {
             throw new IllegalStateException("Failed to check reviews completion: " + e.getMessage());
@@ -456,7 +434,6 @@ public class Transaction {
                 return false;
             }
 
-            // Check time limit (reviews within 30 days of delivery)
             if (delivery_date != null) {
                 long daysSinceDelivery = TimeUnit.DAYS.convert(
                         new Date().getTime() - delivery_date.getTime(),
@@ -510,7 +487,7 @@ public class Transaction {
         try {
             float total = getItem().getPrice();
             if (credits_used > 0) {
-                float discount = credits_used * 10.0f; // Each credit worth Rs. 10
+                float discount = credits_used * 10.0f;
                 total = Math.max(0, total - discount);
             }
 
@@ -596,7 +573,6 @@ public class Transaction {
             float requestedDiscount = credits * 10.0f;
 
             if (requestedDiscount > maxDiscount) {
-                // Calculate maximum credits that can be used
                 credits = (int) Math.floor(maxDiscount / 10.0f);
             }
 

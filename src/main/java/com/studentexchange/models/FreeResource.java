@@ -23,7 +23,6 @@ public class FreeResource extends Item {
     public FreeResource(String title, User uploader, String description, Category category, GradeLevel grade, String subject, String file_url, boolean is_university_paper, String university, String course_code, int year, String semester, String exam_type, boolean has_solutions, boolean is_official, float file_size, String file_format) {
         super(title, uploader, description, category, grade, subject);
         try {
-            // Validate file-related parameters
             if (file_url == null || file_url.trim().isEmpty()) {
                 throw new IllegalArgumentException("File URL cannot be null or empty");
             }
@@ -31,7 +30,6 @@ public class FreeResource extends Item {
                 throw new IllegalArgumentException("Invalid file URL format");
             }
 
-            // Validate university paper specific parameters
             if (is_university_paper) {
                 if (university == null || university.trim().isEmpty()) {
                     throw new IllegalArgumentException("University cannot be null or empty for university papers");
@@ -44,15 +42,13 @@ public class FreeResource extends Item {
                 }
             }
 
-            // Validate file size
             if (file_size <= 0) {
                 throw new IllegalArgumentException("File size must be positive");
             }
-            if (file_size > 1000) { // 1000 MB = 1GB limit
+            if (file_size > 1000) {
                 throw new IllegalArgumentException("File size cannot exceed 1000 MB");
             }
 
-            // Validate file format
             if (file_format == null || file_format.trim().isEmpty()) {
                 throw new IllegalArgumentException("File format cannot be null or empty");
             }
@@ -73,7 +69,6 @@ public class FreeResource extends Item {
             this.file_format = file_format.trim();
             this.download_count = 0;
 
-            // Additional validation
             if (Float.isNaN(this.file_size) || Float.isInfinite(this.file_size)) {
                 throw new IllegalArgumentException("File size is not a valid number");
             }
@@ -83,7 +78,6 @@ public class FreeResource extends Item {
     }
 
     private boolean isValidUrl(String url) {
-        // Basic URL validation
         return url != null &&
                 (url.startsWith("http://") || url.startsWith("https://") ||
                         url.startsWith("ftp://") || url.startsWith("file://"));
@@ -128,7 +122,6 @@ public class FreeResource extends Item {
     public void setIs_university_paper(boolean is_university_paper) {
         try {
             if (this.is_university_paper && !is_university_paper) {
-                // Changing from university paper to regular resource
                 if (download_count > 0) {
                     throw new IllegalStateException("Cannot change type of resource that has been downloaded");
                 }
@@ -333,7 +326,6 @@ public class FreeResource extends Item {
                     description.toLowerCase().contains(lowerKeyword) ||
                     subject.toLowerCase().contains(lowerKeyword);
 
-            // Additional university paper specific search
             if (is_university_paper) {
                 String uni = getUniversity();
                 String course = getCourse_code();

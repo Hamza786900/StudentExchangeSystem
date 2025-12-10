@@ -29,7 +29,6 @@ public class CreditSystem {
 
     private void initializeRules() {
         try {
-            // Default credit earning rules
             credit_rules.put("FREE_RESOURCE_UPLOAD", UPLOAD_CREDITS);
             credit_rules.put("SALE_COMPLETION", 20);
             credit_rules.put("REVIEW_COMPLETION", 10);
@@ -37,7 +36,6 @@ public class CreditSystem {
             credit_rules.put("REFERRAL_BONUS", 25);
             credit_rules.put("FIRST_PURCHASE_BONUS", 30);
 
-            // Default redemption rules (points to discount)
             redemption_rules.put(10, 10.0);    // 10 points = Rs. 10 discount
             redemption_rules.put(20, 20.0);    // 20 points = Rs. 20 discount
             redemption_rules.put(50, 50.0);    // 50 points = Rs. 50 discount
@@ -50,12 +48,10 @@ public class CreditSystem {
     }
 
     public Map<String, Integer> getCredit_rules() {
-        // Return defensive copy
         return new HashMap<>(credit_rules);
     }
 
     public Map<Integer, Double> getRedemption_rules() {
-        // Return defensive copy
         return new HashMap<>(redemption_rules);
     }
 
@@ -130,8 +126,7 @@ public class CreditSystem {
                 throw new IllegalArgumentException("Redemption rule for " + redemption_amount + " points already exists");
             }
 
-            // Validate discount is reasonable (at least 1:1 ratio)
-            double minDiscount = redemption_amount * 0.5; // Minimum 50% of points value
+            double minDiscount = redemption_amount * 0.5;
             if (discount < minDiscount) {
                 throw new IllegalArgumentException("Discount must be at least Rs. " + minDiscount +
                         " for " + redemption_amount + " points");
@@ -157,7 +152,6 @@ public class CreditSystem {
                 throw new IllegalArgumentException("Credit rule '" + trimmedRule + "' does not exist");
             }
 
-            // Don't allow removal of default rules
             if (trimmedRule.equals("FREE_RESOURCE_UPLOAD") ||
                     trimmedRule.equals("SALE_COMPLETION") ||
                     trimmedRule.equals("REVIEW_COMPLETION")) {
@@ -181,16 +175,13 @@ public class CreditSystem {
 
             int basePoints = UPLOAD_CREDITS;
 
-            // Additional points based on item type
             if (item instanceof FreeResource) {
                 FreeResource resource = (FreeResource) item;
-                // Bonus points for quality free resources
                 if (resource.isIs_official() && resource.hasSolutions()) {
                     basePoints += 5;
                 }
             }
 
-            // Bonus points for high-quality items
             if (item instanceof ForSaleItem) {
                 ForSaleItem saleItem = (ForSaleItem) item;
                 if (saleItem.getCondition() == Condition.NEW) {
@@ -198,7 +189,6 @@ public class CreditSystem {
                 }
             }
 
-            // Ensure points are within reasonable limits
             return Math.min(basePoints, 100);
 
         } catch (IllegalArgumentException e) {
@@ -220,18 +210,15 @@ public class CreditSystem {
                 throw new IllegalArgumentException("Cannot redeem more than 10000 points at once");
             }
 
-            // Check if user has enough points
             int userCredits = user.getCredit_points();
             if (userCredits < points) {
                 throw new IllegalStateException("User has only " + userCredits + " points, cannot redeem " + points + " points");
             }
 
-            // Validate redemption amount exists in rules
             if (!redemption_rules.containsKey(points)) {
                 throw new IllegalArgumentException("Redemption amount " + points + " points is not available");
             }
 
-            // Attempt to use points
             boolean success = user.useCreditPoints(points);
             if (!success) {
                 throw new IllegalStateException("Failed to redeem points from user account");
@@ -259,7 +246,6 @@ public class CreditSystem {
                 throw new IllegalStateException("User has negative credit points: " + points);
             }
 
-            // Find best redemption option
             double bestDiscount = 0;
             for (Map.Entry<Integer, Double> rule : redemption_rules.entrySet()) {
                 if (points >= rule.getKey()) {
@@ -267,7 +253,6 @@ public class CreditSystem {
                 }
             }
 
-            // Also calculate direct conversion as fallback
             double directDiscount = points * (CREDITS_PER_RUPEE / 10.0);
 
             return Math.max(bestDiscount, directDiscount);
@@ -318,7 +303,6 @@ public class CreditSystem {
             int bonus = credit_rules.getOrDefault(trimmedReason.toUpperCase(), 0);
 
             if (bonus <= 0) {
-                // Default bonus for unspecified reasons
                 bonus = credit_rules.getOrDefault("BONUS_POINTS", 5);
             }
 
@@ -358,7 +342,6 @@ public class CreditSystem {
             history.add("Total Earned: Rs. " + String.format("%.2f", totalEarned));
             history.add("Available Discount: Rs. " + String.format("%.2f", getEligibleDiscount(user)));
 
-            // Add redemption options if any available
             Map<Integer, Double> redemptions = getAvailableRedemptions(user);
             if (!redemptions.isEmpty()) {
                 history.add("Available Redemptions:");
@@ -391,7 +374,6 @@ public class CreditSystem {
                 return false;
             }
 
-            // Check if redemption option exists
             if (!redemption_rules.containsKey(points)) {
                 throw new IllegalArgumentException("Redemption amount " + points + " is not available");
             }
@@ -418,12 +400,10 @@ public class CreditSystem {
                 throw new IllegalArgumentException("Points cannot exceed 10000");
             }
 
-            // Check if there's a specific redemption rule
             if (redemption_rules.containsKey(points)) {
                 return redemption_rules.get(points);
             }
 
-            // Otherwise calculate based on standard rate
             double discount = points * (CREDITS_PER_RUPEE / 10.0);
 
             if (Double.isNaN(discount) || Double.isInfinite(discount)) {
@@ -469,7 +449,6 @@ public class CreditSystem {
                 throw new IllegalArgumentException("User cannot be null");
             }
 
-            // Only allow reset if credits are reasonable
             int currentCredits = user.getCredit_points();
             if (currentCredits > 10000) {
                 throw new IllegalStateException("Cannot reset credits above 10000. Contact administrator.");
@@ -495,10 +474,8 @@ public class CreditSystem {
                 throw new IllegalArgumentException("Transaction amount cannot be negative");
             }
 
-            // Calculate points based on transaction amount (1 point per Rs. 10 spent)
             int points = (int) (transactionAmount / 10);
 
-            // Cap points to prevent abuse
             points = Math.min(points, 100);
 
             if (points > 0) {
@@ -519,14 +496,12 @@ public class CreditSystem {
             int totalCreditRules = credit_rules.size();
             int totalRedemptionOptions = redemption_rules.size();
 
-            // Calculate average credit award
             int totalCreditValue = 0;
             for (int credit : credit_rules.values()) {
                 totalCreditValue += credit;
             }
             double averageCreditAward = totalCreditRules > 0 ? (double) totalCreditValue / totalCreditRules : 0;
 
-            // Calculate best redemption value
             double bestValueRatio = 0;
             int bestRedemptionPoints = 0;
             for (Map.Entry<Integer, Double> rule : redemption_rules.entrySet()) {

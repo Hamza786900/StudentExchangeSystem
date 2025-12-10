@@ -36,7 +36,7 @@ public class BrowseScreen {
         view.setPadding(new Insets(30));
         view.setStyle("-fx-background-color: #F0F0F5;");
 
-        // Header with credits display
+
         HBox headerBox = new HBox(20);
         headerBox.setAlignment(Pos.CENTER);
 
@@ -44,7 +44,7 @@ public class BrowseScreen {
         title.setFont(Font.font("Arial", 28));
         title.setStyle("-fx-font-weight: bold;");
 
-        // Credit points display
+
         HBox creditBox = new HBox(5);
         creditBox.setAlignment(Pos.CENTER_RIGHT);
 
@@ -57,7 +57,7 @@ public class BrowseScreen {
 
         creditBox.getChildren().addAll(creditIcon, creditPointsLabel);
 
-        // Use HBox.setHgrow to ensure title takes available space
+
         HBox.setHgrow(title, javafx.scene.layout.Priority.ALWAYS);
         headerBox.getChildren().addAll(title, creditBox);
 
@@ -300,11 +300,10 @@ public class BrowseScreen {
 
             ForSaleItem forSaleItem = (ForSaleItem) item;
 
-            // Check if item is still available
+
             if (!forSaleItem.isAvailable()) {
                 System.out.println("DEBUG: Item is no longer available");
                 showError("Sorry, this item has already been sold!");
-                // Refresh the list to remove sold items
                 loadAllItems();
                 return;
             }
@@ -316,7 +315,7 @@ public class BrowseScreen {
 
             System.out.println("DEBUG: Price: " + itemPrice + ", Credits: " + userCredits + ", Discount: " + eligibleDiscount);
 
-            // Ask if user wants to use credit points
+
             Alert creditAlert = new Alert(Alert.AlertType.CONFIRMATION);
             creditAlert.setTitle("Use Credit Points");
             creditAlert.setHeaderText("Credit Points Available: " + userCredits);
@@ -348,7 +347,7 @@ public class BrowseScreen {
 
                     if (response == useCreditsBtn) {
                         System.out.println("DEBUG: User chose to use credits");
-                        // Show credit redemption options
+
                         Map<Integer, Double> availableRedemptions = creditSystem.getAvailableRedemptions(currentUser);
                         System.out.println("DEBUG: Available redemptions: " + availableRedemptions.size());
 
@@ -356,7 +355,7 @@ public class BrowseScreen {
                             System.out.println("DEBUG: No redemptions available");
                             showInfo("No redemption options available with your current points.");
                         } else {
-                            // Create dialog to select redemption amount
+
                             ChoiceDialog<Integer> redemptionDialog = new ChoiceDialog<>();
                             redemptionDialog.setTitle("Select Redemption");
                             redemptionDialog.setHeaderText("Available Redemption Options");
@@ -407,11 +406,11 @@ public class BrowseScreen {
                                     showError("Failed to apply credits.", ex);
                                 }
                             });
-                            return; // Exit early if we're in credit selection flow
+                            return;
                         }
                     }
 
-                    // If skipping credits or no redemption options, proceed with original price
+
                     System.out.println("DEBUG: Proceeding without credits or after skipping");
                     proceedWithPayment(forSaleItem, finalPrice[0], creditsToUse[0]);
 
@@ -435,11 +434,11 @@ public class BrowseScreen {
             System.out.println("DEBUG: Item: " + item.getTitle() + ", Price: " + finalPrice + ", Credits: " + creditsToUse);
             System.out.println("DEBUG: Item available? " + item.isAvailable());
 
-            // Check if item is still available before proceeding
+
             if (!item.isAvailable()) {
                 System.out.println("DEBUG: Item is no longer available before payment!");
                 showError("Sorry, this item has already been sold or is no longer available!");
-                // Refresh the item list
+
                 loadAllItems();
                 return;
             }
@@ -474,27 +473,27 @@ public class BrowseScreen {
                         User currentUser = MainApp.getCurrentUser();
                         System.out.println("DEBUG: Creating transaction for user: " + currentUser.getName());
 
-                        // Double-check if item is still available before creating transaction
+
                         if (!item.isAvailable()) {
                             System.out.println("DEBUG: Item is no longer available! Refreshing list...");
                             showError("This item is no longer available for purchase!");
-                            // Refresh the list to show current availability
+
                             loadAllItems();
                             return;
                         }
 
-                        // Create transaction with credits applied
+
                         Transaction transaction = MainApp.getSystem().createTransaction(currentUser, item, method);
                         System.out.println("DEBUG: Transaction created: " + (transaction != null ? transaction.getTransaction_id() : "null"));
 
                         if (transaction != null) {
-                            // Apply credits to transaction if any
+
                             if (creditsToUse > 0) {
                                 System.out.println("DEBUG: Applying " + creditsToUse + " credits to transaction");
                                 transaction.applyCredits(creditsToUse);
                             }
 
-                            // Process payment
+
                             Map<String, String> paymentDetails = new HashMap<>();
                             paymentDetails.put("payment_method", method.name());
                             paymentDetails.put("amount", String.valueOf(finalPrice));
@@ -511,11 +510,11 @@ public class BrowseScreen {
                                         "Final Price: Rs. " + String.format("%.2f", finalPrice) + "\n" +
                                         "Credits Used: " + creditsToUse + " points");
 
-                                // Remove sold item from browse list
+
                                 currentItems.remove(item);
                                 updateItemList();
 
-                                // Update credit points display
+
                                 updateCreditPointsDisplay();
                             } else {
                                 showError("Payment processing failed!");
@@ -530,10 +529,10 @@ public class BrowseScreen {
                     System.out.println("DEBUG: Transaction error: " + ex.getMessage());
                     ex.printStackTrace();
 
-                    // Check if the error is about item availability
+
                     if (ex.getMessage() != null && ex.getMessage().contains("no longer available")) {
                         showError("This item was sold while you were completing the purchase. Please browse other items.");
-                        // Refresh the list
+
                         loadAllItems();
                     } else {
                         showError("Error processing transaction.", ex);

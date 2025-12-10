@@ -40,7 +40,7 @@ public class DashboardScreen {
             User user = MainApp.getCurrentUser();
             System.out.println("DEBUG: DashboardScreen - Current user: " + (user != null ? user.getName() : "null"));
 
-            // Top HBox for welcome label
+
             HBox topBox = new HBox();
             topBox.setAlignment(Pos.CENTER_LEFT);
             topBox.setPadding(new Insets(0, 0, 20, 0));
@@ -51,7 +51,7 @@ public class DashboardScreen {
 
             topBox.getChildren().add(welcome);
 
-            // Logout button at top-right
+
             HBox logoutBox = new HBox();
             logoutBox.setAlignment(Pos.TOP_RIGHT);
             Button logoutBtn = new Button("Logout");
@@ -70,20 +70,20 @@ public class DashboardScreen {
             });
             logoutBox.getChildren().add(logoutBtn);
 
-            // Container for top section
+
             HBox topContainer = new HBox();
             topContainer.setAlignment(Pos.CENTER);
             topContainer.setPadding(new Insets(0, 0, 20, 0));
             topContainer.getChildren().addAll(topBox, logoutBox);
             HBox.setHgrow(topBox, javafx.scene.layout.Priority.ALWAYS);
 
-            // Middle buttons
+
             GridPane buttonGrid = new GridPane();
             buttonGrid.setAlignment(Pos.CENTER);
             buttonGrid.setHgap(20);
             buttonGrid.setVgap(20);
 
-            // Upload and Browse buttons
+
             Button uploadBtn = createButton("Upload Item", "#4CAF50", 200, 60, e -> {
                 System.out.println("DEBUG: Upload Item button clicked");
                 try {
@@ -106,7 +106,7 @@ public class DashboardScreen {
                 }
             });
 
-            // Fixed buttons - using existing methods
+
             Button myItemsBtn = createButton("My Uploaded Items", "#FF9800", 200, 60, e -> {
                 System.out.println("DEBUG: My Uploaded Items button clicked");
                 try {
@@ -183,7 +183,7 @@ public class DashboardScreen {
                 return;
             }
 
-            // Get user's uploaded items using Catalog's getItemsBySeller method
+
             List<Item> myItems = MainApp.getSystem().getCatalog().getItemsBySeller(currentUser);
 
             if (myItems.isEmpty()) {
@@ -229,11 +229,11 @@ public class DashboardScreen {
                 return;
             }
 
-            // Get all transactions from system
+
             List<Transaction> allTransactions = MainApp.getSystem().getTransactions();
             List<Transaction> userTransactions = new ArrayList<>();
 
-            // Filter transactions where user is buyer or seller
+
             for (Transaction trans : allTransactions) {
                 if (trans.getBuyer().equals(currentUser) || trans.getSeller().equals(currentUser)) {
                     userTransactions.add(trans);
@@ -311,18 +311,18 @@ public class DashboardScreen {
                 return;
             }
 
-            // Get statistics using existing methods
+
             int totalItems = MainApp.getSystem().getCatalog().getItemCount();
             List<Item> myUploads = MainApp.getSystem().getCatalog().getItemsBySeller(user);
             int myUploadsCount = myUploads.size();
 
-            // Count total views for user's items
+
             int totalViews = 0;
             for (Item item : myUploads) {
                 totalViews += item.getViews();
             }
 
-            // Count user's transactions
+
             List<Transaction> allTransactions = MainApp.getSystem().getTransactions();
             int myPurchases = 0;
             for (Transaction trans : allTransactions) {

@@ -22,18 +22,15 @@ public class PastPaper extends ForSaleItem {
         super(title, uploader, description, category, grade, subject, condition, market_price, price);
 
         try {
-            // Validate constructor parameters
             if (exam_board == null || exam_board.trim().isEmpty()) {
                 throw new IllegalArgumentException("Exam board cannot be null or empty");
             }
 
-            // Validate year
             int currentYear = Calendar.getInstance().get(Calendar.YEAR);
             if (year < 1900 || year > currentYear + 1) { // Allow next year for upcoming exams
                 throw new IllegalArgumentException("Year must be between 1900 and " + (currentYear + 1));
             }
 
-            // Validate total_papers
             if (total_papers <= 0) {
                 throw new IllegalArgumentException("Total papers must be a positive number");
             }
@@ -41,12 +38,10 @@ public class PastPaper extends ForSaleItem {
                 throw new IllegalArgumentException("Total papers cannot exceed 50");
             }
 
-            // Validate compilation consistency
             if (is_compilation && total_papers <= 1) {
                 throw new IllegalArgumentException("Compilation must have more than 1 paper");
             }
 
-            // Validate subject code format (basic validation)
             if (subject_code == null || subject_code.trim().isEmpty()) {
                 throw new IllegalArgumentException("Subject code cannot be null or empty");
             }
@@ -71,7 +66,6 @@ public class PastPaper extends ForSaleItem {
     }
 
     private boolean isValidSubjectCode(String code) {
-        // Basic validation: should be alphanumeric and 2-10 characters
         return code.matches("[A-Za-z0-9\\s-]{2,10}");
     }
 
@@ -306,12 +300,11 @@ public class PastPaper extends ForSaleItem {
                 return false;
             }
 
-            // Check if grade is appropriate for past papers
             return grade == GradeLevel.GRADE_9 ||
                     grade == GradeLevel.GRADE_10 ||
                     grade == GradeLevel.GRADE_11 ||
                     grade == GradeLevel.GRADE_12 ||
-                    grade == GradeLevel.UNIVERSITY; // Added university as valid grade
+                    grade == GradeLevel.UNIVERSITY;
         } catch (Exception e) {
             throw new IllegalStateException("Failed to validate grade: " + e.getMessage());
         }
@@ -323,7 +316,7 @@ public class PastPaper extends ForSaleItem {
             if (is_compilation) {
                 return papers;
             }
-            return Math.min(papers, 1); // Non-compilation has at most 1 paper
+            return Math.min(papers, 1);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to calculate total papers: " + e.getMessage());
         }
@@ -389,7 +382,6 @@ public class PastPaper extends ForSaleItem {
     @Override
     public boolean matchesSearch(String keyword) {
         try {
-            // First check parent class search
             boolean parentMatches = super.matchesSearch(keyword);
             if (parentMatches) {
                 return true;
@@ -401,7 +393,6 @@ public class PastPaper extends ForSaleItem {
 
             String lowerKeyword = keyword.toLowerCase().trim();
 
-            // Past paper specific search
             String board = getExam_board().toLowerCase();
             String subjCode = getSubject_code().toLowerCase();
             String yearStr = String.valueOf(getYear());

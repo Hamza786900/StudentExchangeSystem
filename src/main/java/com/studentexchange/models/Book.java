@@ -17,7 +17,7 @@ public class Book extends ForSaleItem {
     public Book(String title, User uploader, String description, Category category, GradeLevel grade, String subject, Condition condition, float market_price, float price, String author, String edition, String publisher, int pages, boolean is_hardcover) {
         super(title, uploader, description, category, grade, subject, condition, market_price, price);
         try {
-            // Validate book-specific parameters
+
             if (author == null || author.trim().isEmpty()) {
                 throw new IllegalArgumentException("Author cannot be null or empty");
             }
@@ -40,7 +40,7 @@ public class Book extends ForSaleItem {
             this.pages = pages;
             this.is_hardcover = is_hardcover;
 
-            // Additional validation after setting values
+
             if (this.author.length() < 2) {
                 throw new IllegalArgumentException("Author name is too short");
             }
@@ -176,7 +176,7 @@ public class Book extends ForSaleItem {
     @Override
     public boolean matchesSearch(String keyword) {
         try {
-            // First check parent class search
+
             boolean parentMatches = super.matchesSearch(keyword);
             if (parentMatches) {
                 return true;
@@ -188,7 +188,6 @@ public class Book extends ForSaleItem {
 
             String lowerKeyword = keyword.toLowerCase();
 
-            // Book-specific search
             String author = getAuthor();
             String publisher = getPublisher();
             String edition = getEdition();
@@ -241,10 +240,8 @@ public class Book extends ForSaleItem {
     }
 
     public boolean validateISBN() {
-        // Placeholder for ISBN validation logic
-        // In a real implementation, this would validate ISBN-10 or ISBN-13 format
+
         try {
-            // For now, return true if book has a title and author
             String title = getTitle();
             String author = getAuthor();
             return title != null && !title.isEmpty() &&
@@ -351,12 +348,10 @@ public class Book extends ForSaleItem {
     @Override
     public boolean canBePurchased() {
         try {
-            // Additional book-specific validation
             if (!super.canBePurchased()) {
                 return false;
             }
 
-            // Check if essential book information is present
             String author = getAuthor();
             String publisher = getPublisher();
             int pages = getPages();

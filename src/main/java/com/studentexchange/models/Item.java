@@ -19,7 +19,6 @@ public abstract class Item {
 
     public Item(String title, User uploader, String description, Category category, GradeLevel grade, String subject) {
         try {
-            // Validate constructor parameters
             if (title == null || title.trim().isEmpty()) {
                 throw new IllegalArgumentException("Title cannot be null or empty");
             }

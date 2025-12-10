@@ -29,7 +29,7 @@ public class LoginScreen {
         view.setPadding(new Insets(50));
         view.setStyle("-fx-background-color: #F0F0F5;");
 
-        // Updated heading
+
         Label title = new Label("STUDENT BAZAAR");
         title.setFont(Font.font("Arial", 36));
         title.setStyle("-fx-font-weight: bold;");
@@ -101,7 +101,7 @@ public class LoginScreen {
 
         buttonBox.getChildren().addAll(loginBtn, backBtn);
 
-        // Only heading, form, and buttons remain
+
         view.getChildren().addAll(title, grid, buttonBox);
     }
 

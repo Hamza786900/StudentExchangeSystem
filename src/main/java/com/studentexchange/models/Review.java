@@ -18,7 +18,6 @@ public class Review {
 
     public Review(int rating, String comment, User reviewed_user, User reviewer_user, Transaction transaction) {
         try {
-            // Validate all parameters before creating object
             if (rating < 1 || rating > 5) {
                 throw new IllegalArgumentException("Rating must be between 1 and 5");
             }
@@ -38,7 +37,6 @@ public class Review {
                 throw new IllegalArgumentException("Reviewer user cannot be null");
             }
 
-            // Prevent self-review
             if (reviewed_user.equals(reviewer_user)) {
                 throw new IllegalArgumentException("User cannot review themselves");
             }
@@ -47,12 +45,10 @@ public class Review {
                 throw new IllegalArgumentException("Transaction cannot be null");
             }
 
-            // Check if reviewer is part of the transaction
             if (!transaction.getBuyer().equals(reviewer_user) && !transaction.getSeller().equals(reviewer_user)) {
                 throw new IllegalArgumentException("Reviewer must be either buyer or seller in the transaction");
             }
 
-            // Check if reviewed user is part of the transaction
             if (!transaction.getBuyer().equals(reviewed_user) && !transaction.getSeller().equals(reviewed_user)) {
                 throw new IllegalArgumentException("Reviewed user must be either buyer or seller in the transaction");
             }
@@ -93,7 +89,6 @@ public class Review {
                 throw new IllegalArgumentException("Rating must be between 1 and 5");
             }
 
-            // Cannot change rating after 30 days
             if (getAgeInDays() > 30) {
                 throw new IllegalStateException("Cannot change rating after 30 days");
             }
@@ -122,7 +117,6 @@ public class Review {
                 throw new IllegalArgumentException("Comment cannot exceed 1000 characters");
             }
 
-            // Cannot change comment after 7 days
             if (getAgeInDays() > 7) {
                 throw new IllegalStateException("Cannot change comment after 7 days");
             }
@@ -162,7 +156,7 @@ public class Review {
         if (review_date == null) {
             throw new IllegalStateException("Review date is not set");
         }
-        return new Date(review_date.getTime()); // Return defensive copy
+        return new Date(review_date.getTime());
     }
 
     public User getReviewed_user() {
@@ -189,7 +183,7 @@ public class Review {
     public boolean validateRating(int rating) {
         try {
             if (rating >= 1 && rating <= 5) {
-                setRating(rating); // Use the setter to maintain consistency
+                setRating(rating);
                 return true;
             } else {
                 throw new IllegalArgumentException("Rating must be between 1 and 5");
@@ -300,7 +294,6 @@ public class Review {
                 stars.append("☆");
             }
 
-            // Add textual description
             String description;
             if (currentRating >= 4) {
                 description = " (Excellent)";
@@ -328,7 +321,7 @@ public class Review {
     public boolean canBeEdited() {
         try {
             long ageInDays = getAgeInDays();
-            return ageInDays <= 7; // Allow edits within 7 days
+            return ageInDays <= 7;
         } catch (Exception e) {
             throw new IllegalStateException("Failed to check if review can be edited: " + e.getMessage());
         }
@@ -337,7 +330,7 @@ public class Review {
     public boolean canBeDeleted() {
         try {
             long ageInDays = getAgeInDays();
-            return ageInDays <= 3; // Allow deletion within 3 days
+            return ageInDays <= 3;
         } catch (Exception e) {
             throw new IllegalStateException("Failed to check if review can be deleted: " + e.getMessage());
         }

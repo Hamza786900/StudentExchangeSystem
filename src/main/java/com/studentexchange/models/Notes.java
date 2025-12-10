@@ -21,7 +21,6 @@ public class Notes extends ForSaleItem {
         super(title, uploader, description, category, grade, subject, condition, market_price, price);
 
         try {
-            // Validate constructor parameters
             if (pages <= 0) {
                 throw new IllegalArgumentException("Pages must be a positive number");
             }
@@ -35,7 +34,6 @@ public class Notes extends ForSaleItem {
                 throw new IllegalArgumentException("Quality cannot be null or empty");
             }
 
-            // Validate quality values
             String lowerQuality = quality.toLowerCase().trim();
             if (!isValidQuality(lowerQuality)) {
                 throw new IllegalArgumentException("Invalid quality value. Must be 'high', 'medium', or 'low'");
@@ -169,7 +167,6 @@ public class Notes extends ForSaleItem {
     }
 
     public List<String> getChapters() {
-        // Return a defensive copy
         return new ArrayList<>(chapters);
     }
 
@@ -329,7 +326,6 @@ public class Notes extends ForSaleItem {
     @Override
     public boolean matchesSearch(String keyword) {
         try {
-            // First check parent class search
             boolean parentMatches = super.matchesSearch(keyword);
             if (parentMatches) {
                 return true;
@@ -341,7 +337,6 @@ public class Notes extends ForSaleItem {
 
             String lowerKeyword = keyword.toLowerCase().trim();
 
-            // Notes-specific search
             String format = getFormat_type().toLowerCase();
             String quality = getQuality().toLowerCase();
 
@@ -352,7 +347,6 @@ public class Notes extends ForSaleItem {
                 return true;
             }
 
-            // Search in chapters
             return containsChapter(lowerKeyword);
 
         } catch (Exception e) {

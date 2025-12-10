@@ -23,7 +23,6 @@ public class StudentBookExchange {
     }
 
     public Map<String, User> getUsers() {
-        // Return defensive copy
         return new HashMap<>(users);
     }
 
@@ -32,7 +31,6 @@ public class StudentBookExchange {
     }
 
     public List<Transaction> getTransactions() {
-        // Return defensive copy
         return new ArrayList<>(transactions);
     }
 
@@ -46,7 +44,6 @@ public class StudentBookExchange {
                 throw new IllegalArgumentException("Transaction cannot be null");
             }
 
-            // Check for duplicate transaction ID
             String transId = transaction.getTransaction_id();
             for (Transaction existingTrans : transactions) {
                 if (existingTrans.getTransaction_id().equals(transId)) {
@@ -78,12 +75,10 @@ public class StudentBookExchange {
                 throw new IllegalArgumentException("User with ID " + userId + " already exists");
             }
 
-            // Validate user data
             if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
                 throw new IllegalArgumentException("User email cannot be null or empty");
             }
 
-            // Check for duplicate email
             for (User existingUser : users.values()) {
                 if (existingUser.getEmail().equalsIgnoreCase(user.getEmail().trim())) {
                     throw new IllegalArgumentException("User with email " + user.getEmail() + " already exists");
@@ -199,7 +194,6 @@ public class StudentBookExchange {
                         return user;
                     }
                 } catch (Exception e) {
-                    // Skip users with corrupted data
                     System.err.println("Error accessing user data: " + e.getMessage());
                 }
             }
@@ -221,12 +215,10 @@ public class StudentBookExchange {
                 throw new IllegalArgumentException("Uploader cannot be null");
             }
 
-            // Validate uploader exists in system
             if (!users.containsKey(uploader.getUser_id())) {
                 throw new IllegalArgumentException("Uploader is not a registered user");
             }
 
-            // Validate all required parameters
             if (title == null || title.trim().isEmpty()) {
                 throw new IllegalArgumentException("Book title cannot be null or empty");
             }
@@ -286,12 +278,10 @@ public class StudentBookExchange {
                 throw new IllegalArgumentException("Uploader cannot be null");
             }
 
-            // Validate uploader exists in system
             if (!users.containsKey(uploader.getUser_id())) {
                 throw new IllegalArgumentException("Uploader is not a registered user");
             }
 
-            // Validate all required parameters
             if (title == null || title.trim().isEmpty()) {
                 throw new IllegalArgumentException("Notes title cannot be null or empty");
             }
@@ -352,12 +342,10 @@ public class StudentBookExchange {
                 throw new IllegalArgumentException("Uploader cannot be null");
             }
 
-            // Validate uploader exists in system
             if (!users.containsKey(uploader.getUser_id())) {
                 throw new IllegalArgumentException("Uploader is not a registered user");
             }
 
-            // Validate all required parameters
             if (title == null || title.trim().isEmpty()) {
                 throw new IllegalArgumentException("Past paper title cannot be null or empty");
             }
@@ -516,13 +504,11 @@ public class StudentBookExchange {
 
             ForSaleItem forSaleItem = (ForSaleItem) item;
 
-            // Validate seller exists in system
             User seller = item.getUploader();
             if (!users.containsKey(seller.getUser_id())) {
                 throw new IllegalArgumentException("Seller is not a registered user");
             }
 
-            // FIXED: Check availability WITHOUT marking as sold yet
             if (!forSaleItem.isAvailable()) {
                 throw new IllegalStateException("Item is not available for purchase");
             }
@@ -531,27 +517,21 @@ public class StudentBookExchange {
                 throw new IllegalStateException("Item cannot be purchased at this time");
             }
 
-            // Prevent buying from self
             if (buyer.equals(seller)) {
                 throw new IllegalArgumentException("Buyer cannot purchase from themselves");
             }
 
-            // Create transaction WITHOUT marking item as sold
             Transaction transaction = new Transaction(buyer, seller, forSaleItem, method);
             transactions.add(transaction);
 
-            // Update user transaction records
             try {
                 buyer.addTransactionAsBuyer(transaction);
                 seller.addTransactionAsSeller(transaction);
             } catch (Exception e) {
-                // If adding to user records fails, remove transaction from system
                 transactions.remove(transaction);
                 throw new IllegalStateException("Failed to update user transaction records: " + e.getMessage());
             }
 
-            // FIXED: DO NOT mark item as sold here - wait for payment confirmation
-            // item.markAsSold(buyer, new Date()); // REMOVED
 
             return transaction;
 
@@ -575,12 +555,9 @@ public class StudentBookExchange {
                 results = catalog.getItems();
             }
 
-            // Apply additional filters
             List<Item> filteredResults = catalog.filterItems(category, grade, minPrice, maxPrice, subject, condition);
 
-            // Combine results if both keyword search and filters were applied
             if (keyword != null && !keyword.trim().isEmpty()) {
-                // Keep only items that are in both results sets
                 Set<Item> keywordSet = new HashSet<>(results);
                 filteredResults.removeIf(item -> !keywordSet.contains(item));
             }
@@ -645,14 +622,12 @@ public class StudentBookExchange {
                 throw new IllegalArgumentException("Payment details cannot be null or empty");
             }
 
-            // Validate required payment details
             if (!paymentDetails.containsKey("payment_method") ||
                     !paymentDetails.containsKey("amount") ||
                     !paymentDetails.containsKey("reference")) {
                 throw new IllegalArgumentException("Payment details must include payment_method, amount, and reference");
             }
 
-            // Validate payment amount matches transaction total
             try {
                 float amount = Float.parseFloat(paymentDetails.get("amount"));
                 float transactionTotal = transaction.calculateTotal();
@@ -665,8 +640,7 @@ public class StudentBookExchange {
                 throw new IllegalArgumentException("Invalid payment amount format");
             }
 
-            // FIXED: Don't check item availability here since it's already reserved in the transaction
-            // Instead, check if transaction hasn't already been paid
+
             if (transaction.isPaid()) {
                 throw new IllegalStateException("Transaction has already been paid");
             }
@@ -674,18 +648,15 @@ public class StudentBookExchange {
             transaction.completePayment(transaction.getPayment_method());
             transaction.updateShippingStatus(ShippingStatus.NOT_SHIPPED);
 
-            // FIXED: Mark item as sold only after successful payment
             ForSaleItem item = transaction.getItem();
             if (item.isAvailable()) {
                 item.markAsSold(transaction.getBuyer(), new Date());
             } else {
-                // If item is already marked as sold, verify it's sold to the same buyer in this transaction
                 if (!item.getBuyer().equals(transaction.getBuyer())) {
                     throw new IllegalStateException("Item is no longer available for purchase");
                 }
             }
 
-            // Award points for purchase
             credit_system.awardPointsForTransaction(transaction.getBuyer(), transaction.calculateTotal());
 
             return true;
@@ -715,7 +686,6 @@ public class StudentBookExchange {
 
             transaction.confirmDelivery();
 
-            // Award points for successful delivery
             credit_system.addBonusPoints(transaction.getBuyer(), "DELIVERY_COMPLETION");
             credit_system.addBonusPoints(transaction.getSeller(), "SALE_COMPLETED");
 
@@ -739,7 +709,6 @@ public class StudentBookExchange {
                 throw new IllegalArgumentException("Reviewer cannot be null");
             }
 
-            // Validate reviewer is part of transaction
             if (!reviewer.equals(transaction.getBuyer()) && !reviewer.equals(transaction.getSeller())) {
                 throw new IllegalArgumentException("Reviewer must be either buyer or seller in the transaction");
             }
@@ -768,7 +737,6 @@ public class StudentBookExchange {
                 transaction.addSellerReview(review);
             }
 
-            // Update user ratings
             reviewedUser.calculateAverageRating();
 
             return review;
@@ -782,52 +750,6 @@ public class StudentBookExchange {
         }
     }
 
-    public boolean downloadFreeResource(String resourceId, User user) {
-        try {
-            if (resourceId == null || resourceId.trim().isEmpty()) {
-                throw new IllegalArgumentException("Resource ID cannot be null or empty");
-            }
-            if (user == null) {
-                throw new IllegalArgumentException("User cannot be null");
-            }
-
-            // Validate user exists
-            if (!users.containsKey(user.getUser_id())) {
-                throw new IllegalArgumentException("User is not registered");
-            }
-
-            Item item = catalog.getItemById(resourceId.trim());
-
-            if (item == null) {
-                throw new IllegalArgumentException("Resource with ID " + resourceId + " not found");
-            }
-
-            if (!(item instanceof FreeResource)) {
-                throw new IllegalArgumentException("Item with ID " + resourceId + " is not a free resource");
-            }
-
-            FreeResource resource = (FreeResource) item;
-
-            if (!resource.isAvailable()) {
-                throw new IllegalStateException("Resource is not available for download");
-            }
-
-            resource.incrementDownload();
-            resource.incrementViews();
-
-            // Award download credit to resource uploader
-            credit_system.addBonusPoints(resource.getUploader(), "RESOURCE_DOWNLOADED");
-
-            return true;
-
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Failed to download free resource: " + e.getMessage());
-        } catch (IllegalStateException e) {
-            throw new IllegalStateException("Failed to download free resource: " + e.getMessage());
-        } catch (Exception e) {
-            throw new RuntimeException("Unexpected error downloading free resource: " + e.getMessage());
-        }
-    }
 
     public void awardUploadCredits(User user) {
         try {
@@ -890,56 +812,7 @@ public class StudentBookExchange {
         }
     }
 
-    public Map<String, Object> generateSystemReport() {
-        try {
-            Map<String, Object> report = new HashMap<>();
 
-            int totalUsers = users.size();
-            List<Item> allItems = catalog.getItems();
-            int totalItems = allItems.size();
-            int totalTransactions = transactions.size();
-            int availableItems = catalog.getAvailableItems().size();
-            float totalRevenue = getTotalRevenue();
-
-            // Calculate active users (users with transaction history)
-            List<User> activeUsers = getActiveUsers();
-            int activeUserCount = activeUsers.size();
-
-            // Calculate average transaction value
-            float avgTransactionValue = totalTransactions > 0 ? totalRevenue / totalTransactions : 0;
-
-            // Get top sellers
-            List<User> topSellers = getTopSellers();
-            List<String> topSellerNames = new ArrayList<>();
-            for (int i = 0; i < Math.min(5, topSellers.size()); i++) {
-                topSellerNames.add(topSellers.get(i).getName());
-            }
-
-            // Get most downloaded resources
-            List<FreeResource> popularResources = getMostDownloadedResources();
-            List<String> popularResourceTitles = new ArrayList<>();
-            for (int i = 0; i < Math.min(5, popularResources.size()); i++) {
-                popularResourceTitles.add(popularResources.get(i).getTitle());
-            }
-
-            report.put("Total Users", totalUsers);
-            report.put("Active Users", activeUserCount);
-            report.put("Total Items", totalItems);
-            report.put("Available Items", availableItems);
-            report.put("Total Transactions", totalTransactions);
-            report.put("Total Revenue", String.format("Rs. %.2f", totalRevenue));
-            report.put("Average Transaction Value", String.format("Rs. %.2f", avgTransactionValue));
-            report.put("Top Sellers", topSellerNames);
-            report.put("Popular Resources", popularResourceTitles);
-            report.put("System Status", "Operational");
-            report.put("Report Generated", new Date());
-
-            return report;
-
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to generate system report: " + e.getMessage());
-        }
-    }
 
     public boolean validateCNIC(String cnic) {
         try {

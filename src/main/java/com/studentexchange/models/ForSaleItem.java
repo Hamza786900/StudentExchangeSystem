@@ -20,7 +20,6 @@ public class ForSaleItem extends Item {
     public ForSaleItem(String title, User uploader, String description, Category category, GradeLevel grade, String subject, Condition condition, float market_price, float price) {
         super(title, uploader, description, category, grade, subject);
         try {
-            // Validate parameters
             if (condition == null) {
                 throw new IllegalArgumentException("Condition cannot be null");
             }
@@ -42,7 +41,6 @@ public class ForSaleItem extends Item {
             this.buyer = null;
             this.discount_percentage = calculateDiscount();
 
-            // Validate calculated discount
             if (Float.isNaN(discount_percentage) || Float.isInfinite(discount_percentage)) {
                 throw new IllegalStateException("Invalid discount percentage calculated");
             }
@@ -68,7 +66,6 @@ public class ForSaleItem extends Item {
             this.price = price;
             this.discount_percentage = calculateDiscount();
 
-            // Validate calculated discount
             if (Float.isNaN(discount_percentage) || Float.isInfinite(discount_percentage)) {
                 throw new ArithmeticException("Invalid discount percentage calculated after price change");
             }
@@ -119,7 +116,6 @@ public class ForSaleItem extends Item {
             this.market_price = market_price;
             this.discount_percentage = calculateDiscount();
 
-            // Validate calculated discount
             if (Float.isNaN(discount_percentage) || Float.isInfinite(discount_percentage)) {
                 throw new ArithmeticException("Invalid discount percentage calculated after market price change");
             }
@@ -137,7 +133,6 @@ public class ForSaleItem extends Item {
     }
 
     public void setIs_sold(boolean is_sold) {
-        // This method is kept simple as it's usually controlled by markAsSold
         this.is_sold = is_sold;
     }
 
@@ -167,7 +162,7 @@ public class ForSaleItem extends Item {
             throw new IllegalStateException("Sale date is not set for sold item");
         }
         if (sale_date != null) {
-            return new Date(sale_date.getTime()); // Return defensive copy
+            return new Date(sale_date.getTime());
         }
         return null;
     }
@@ -251,7 +246,6 @@ public class ForSaleItem extends Item {
                 }
                 float discount = ((market_price - price) / market_price) * 100;
 
-                // Validate the calculated discount
                 if (Float.isNaN(discount) || Float.isInfinite(discount)) {
                     throw new ArithmeticException("Invalid discount calculation: market_price=" + market_price + ", price=" + price);
                 }
@@ -286,7 +280,7 @@ public class ForSaleItem extends Item {
 
             this.is_sold = true;
             this.buyer = buyer;
-            this.sale_date = new Date(saleDate.getTime()); // Store defensive copy
+            this.sale_date = new Date(saleDate.getTime());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Failed to mark item as sold: " + e.getMessage());
         } catch (IllegalStateException e) {
