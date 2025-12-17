@@ -1,0 +1,223 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam monochrome true
+skinparam shadowing false
+
+' --- Enums ---
+enum Category {
+  + BOOK
+  + NOTES
+  + PAST_PAPERS
+  + RESOURCE
+}
+
+enum Condition {
+  + NEW
+  + GOOD
+  + FAIR
+  + POOR
+}
+
+enum GradeLevel {
+  + GRADE_9
+  + GRADE_10
+  + GRADE_11
+  + GRADE_12
+  + UNIVERSITY
+  + ENTRY_TEST
+}
+
+enum PaymentMethod {
+  + ONLINE
+  + CASH_ON_DELIVERY
+}
+
+enum PaymentStatus {
+  + PENDING
+  + COMPLETED
+  + FAILED
+  + REFUNDED
+}
+
+enum ShippingStatus {
+  + NOT_SHIPPED
+  + SHIPPED
+  + DELIVERED
+}
+
+' --- Abstract Parent ---
+abstract class Item {
+  - String item_id
+  - {static} int counter
+  - String title
+  - String description
+  - User uploader
+  - Date upload_date
+  - Category category
+  - GradeLevel grade
+  - String subject
+  - int views
+  + {abstract} String getDetails()
+  + {abstract} boolean isAvailable()
+  + {abstract} boolean matchesSearch(String keyword)
+  + void incrementViews()
+}
+
+' --- Middle Layer ---
+class ForSaleItem {
+  - float price
+  - Condition condition
+  - float market_price
+  - boolean is_sold
+  - Date sale_date
+  - User buyer
+  - float discount_percentage
+  + void markAsSold(User buyer, Date saleDate)
+  + boolean canBePurchased()
+  + String getConditionDescription()
+}
+
+' --- Specialized Items ---
+class Book {
+  - String author
+  - String edition
+  - String publisher
+  - int pages
+  - boolean is_hardcover
+}
+
+class Notes {
+  - int pages
+  - String format_type
+  - List<String> chapters
+  - boolean is_handwritten
+  - boolean is_scanned
+  - String quality
+}
+
+class PastPaper {
+  - String exam_board
+  - int year
+  - boolean has_answers
+  - boolean has_model_paper
+  - boolean is_solved
+  - int total_papers
+  - String subject_code
+  - boolean is_compilation
+}
+
+class FreeResource {
+  - String file_url
+  - boolean is_university_paper
+  - String university
+  - String course_code
+  - int year
+  - String semester
+  - String exam_type
+  - boolean has_solutions
+  - boolean is_official
+  - float file_size
+  - String file_format
+  - int download_count
+  + void incrementDownload()
+}
+
+' --- Core Logic ---
+class User {
+  - String user_id
+  - {static} int counter
+  - String name
+  - String cnic
+  - String email
+  - String password
+  - String phone
+  - String address
+  - Date registration_date
+  - int credit_points
+  - boolean is_verified
+  - float average_rating
+  - List<Transaction> transactions_as_buyer
+  - List<Transaction> transactions_as_seller
+  + void addCreditPoints(int points)
+  + boolean useCreditPoints(int points)
+  + void updateProfile(String name, String phone, String address)
+}
+
+class Transaction {
+  - String transaction_id
+  - {static} int counter
+  - User buyer
+  - User seller
+  - ForSaleItem item
+  - Date transaction_date
+  - PaymentMethod payment_method
+  - PaymentStatus payment_status
+  - ShippingStatus shipping_status
+  - Date shipping_date
+  - Date delivery_date
+  - Review buyer_review
+  - Review seller_review
+  - boolean reviews_completed
+  - int credits_used
+  + void applyCredits(int credits)
+  + void completePayment(PaymentMethod method)
+  + float calculateTotal()
+}
+
+class Review {
+  - String review_id
+  - {static} int counter
+  - int rating
+  - String comment
+  - Date review_date
+  - User reviewed_user
+  - User reviewer_user
+  - Transaction transaction
+  - boolean is_verified_purchase
+}
+
+' --- Management Classes ---
+class Catalog {
+  - List<Item> items
+  - Map<Category, Integer> categories
+  - Date updated_date
+  + void addItem(Item item)
+  + List<Item> search(String keyword)
+  + List<Item> filterItems(...)
+}
+
+class StudentBookExchange {
+  - Map<String, User> users
+  - Catalog catalog
+  - List<Transaction> transactions
+  + User login(String email, String password)
+  + User registerUser(...)
+  + Book uploadBook(...)
+  + Transaction createTransaction(...)
+}
+
+class CreditSystem {
+  - {static} int UPLOAD_CREDITS
+  + void awardPointsForTransaction(User user, float transactionAmount)
+  + float getCreditValue(int credits)
+}
+
+' --- Relationships ---
+
+Item <|-- ForSaleItem
+Item <|-- FreeResource
+ForSaleItem <|-- Book
+ForSaleItem <|-- Notes
+ForSaleItem <|-- PastPaper
+
+Catalog "1" *-- "many" Item
+StudentBookExchange *-- Catalog
+StudentBookExchange "1" o-- "many" User
+StudentBookExchange "1" o-- "many" Transaction
+
+Transaction "1" o-- "1" ForSaleItem
+Transaction "1" o-- "2" User : buyer/seller
+Review "1" o-- "1" Transaction
+Review "1" o-- "2" User : reviewer/reviewed
+
+@enduml
