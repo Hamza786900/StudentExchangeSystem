@@ -23,7 +23,6 @@ public class Demo1 {
         root = new BorderPane();
         root.setStyle("-fx-background-color: black;");
 
-        // ===== TOP: Headings =====
         Label mainHeading = new Label("Student Bazaar");
         mainHeading.setStyle("-fx-text-fill: white; -fx-font-size: 30px; -fx-font-weight: bold;");
 
@@ -35,7 +34,6 @@ public class Demo1 {
         topBox.setPadding(new Insets(25, 0, 15, 0));
         root.setTop(topBox);
 
-        // ===== CENTER: Login Form =====
         Label emailLabel = new Label("Email:");
         emailLabel.setStyle("-fx-text-fill: white;");
 
@@ -48,7 +46,6 @@ public class Demo1 {
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Enter password");
 
-        // ===== Buttons =====
         Button loginBtn = new Button("Login");
         loginBtn.setPrefSize(90, 35);
         loginBtn.setStyle("-fx-background-color: teal; -fx-text-fill: black;");

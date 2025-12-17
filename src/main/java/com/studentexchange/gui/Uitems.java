@@ -21,7 +21,7 @@ public class Uitems {
         root = new BorderPane();
         root.setStyle("-fx-background-color: black;");
 
-        // ===== TOP: Heading =====
+
         Label heading = new Label("Upload Item");
         heading.setStyle("-fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold;");
         VBox topBox = new VBox(heading);
@@ -29,63 +29,60 @@ public class Uitems {
         topBox.setPadding(new Insets(20, 0, 15, 0));
         root.setTop(topBox);
 
-        // ===== CENTER: Form =====
+
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
         grid.setVgap(15);
 
-        // Category
+
         Label categoryLabel = new Label("Category:");
         categoryLabel.setStyle("-fx-text-fill: white;");
         ComboBox<Category> categoryBox = new ComboBox<>();
         categoryBox.getItems().addAll(Category.values());
         categoryBox.setPrefWidth(200);
 
-        // Grade Level
+
         Label gradeLabel = new Label("Grade:");
         gradeLabel.setStyle("-fx-text-fill: white;");
         ComboBox<GradeLevel> gradeBox = new ComboBox<>();
         gradeBox.getItems().addAll(GradeLevel.values());
         gradeBox.setPrefWidth(200);
 
-        // Title
+
         Label titleLabel = new Label("Title:");
         titleLabel.setStyle("-fx-text-fill: white;");
         TextField titleField = new TextField();
 
-        // Subject
         Label subjectLabel = new Label("Subject:");
         subjectLabel.setStyle("-fx-text-fill: white;");
         TextField subjectField = new TextField();
 
-        // Description
         Label descLabel = new Label("Description:");
         descLabel.setStyle("-fx-text-fill: white;");
         TextArea descArea = new TextArea();
         descArea.setPrefRowCount(3);
         descArea.setPrefWidth(200);
 
-        // Condition
+
         Label conditionLabel = new Label("Condition:");
         conditionLabel.setStyle("-fx-text-fill: white;");
         ComboBox<Condition> conditionBox = new ComboBox<>();
         conditionBox.getItems().addAll(Condition.values());
         conditionBox.setPrefWidth(200);
 
-        // Market Price
         Label marketPriceLabel = new Label("Market Price:");
         marketPriceLabel.setStyle("-fx-text-fill: white;");
         TextField marketPriceField = new TextField();
         marketPriceField.setPromptText("0.00");
 
-        // Selling Price
+
         Label priceLabel = new Label("Selling Price:");
         priceLabel.setStyle("-fx-text-fill: white;");
         TextField priceField = new TextField();
         priceField.setPromptText("0.00");
 
-        // Add to grid
+
         grid.add(categoryLabel, 0, 0);
         grid.add(categoryBox, 1, 0);
         grid.add(gradeLabel, 0, 1);
@@ -105,13 +102,12 @@ public class Uitems {
 
         root.setCenter(grid);
 
-        // ===== BOTTOM: Upload Button =====
+
         Button uploadBtn = new Button("Upload");
         uploadBtn.setStyle("-fx-background-color: teal; -fx-text-fill: black;");
         uploadBtn.setPrefSize(100, 35);
         uploadBtn.setOnAction(e -> {
             try {
-                // Validate inputs
                 if (categoryBox.getValue() == null || gradeBox.getValue() == null ||
                         titleField.getText().trim().isEmpty() || subjectField.getText().trim().isEmpty() ||
                         conditionBox.getValue() == null || marketPriceField.getText().trim().isEmpty() ||
@@ -128,7 +124,11 @@ public class Uitems {
                     return;
                 }
 
-                // Create a simple book item (you can expand this to handle different types)
+                if (main.getCurrentUser() == null) {
+                    showAlert("Error", "You must be logged in to upload an item.");
+                    return;
+                }
+
                 Book book = main.getSystem().uploadBook(
                         main.getCurrentUser(),
                         titleField.getText().trim(),
@@ -139,7 +139,7 @@ public class Uitems {
                         conditionBox.getValue(),
                         marketPrice,
                         price,
-                        "Unknown Author", // Default values for Book-specific fields
+                        "Unknown Author",
                         "1st Edition",
                         "Unknown Publisher",
                         100,
@@ -148,7 +148,7 @@ public class Uitems {
 
                 showAlert("Success", "Item uploaded successfully!");
 
-                // Clear form
+
                 categoryBox.setValue(null);
                 gradeBox.setValue(null);
                 titleField.clear();

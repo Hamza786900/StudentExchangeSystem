@@ -11,12 +11,41 @@ public class Catalog {
     private Date updated_date;
 
     public Catalog() {
-        this.items = new ArrayList<>();
-        this.categories = new HashMap<>();
-        this.updated_date = new Date();
+        try {
+            this.items = new ArrayList<>();
+            this.categories = new HashMap<>();
+            this.updated_date = new Date();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create Catalog: " + e.getMessage());
+        }
     }
 
-    public List<Item> getItems() { return new ArrayList<>(items); }
+    public List<Item> getItems() {
+        return new ArrayList<>(items);
+    }
+
+    public List<Item> getItemsBySeller(User user) {
+        try {
+            if (user == null) {
+                throw new IllegalArgumentException("User cannot be null");
+            }
+            List<Item> userItems = new ArrayList<>();
+            for (Item item : items) {
+                try {
+                    if (item.getUploader().equals(user)) {
+                        userItems.add(item);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error checking item uploader: " + e.getMessage());
+                }
+            }
+            return userItems;
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to get items by seller: " + e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error getting items by seller: " + e.getMessage());
+        }
+    }
 
     public void addItem(Item item) {
         try {
@@ -29,27 +58,19 @@ public class Catalog {
                     throw new IllegalArgumentException("Item with ID " + itemId + " already exists in catalog");
                 }
             }
+            if (item.getTitle() == null || item.getTitle().trim().isEmpty()) {
+                throw new IllegalArgumentException("Item title cannot be null or empty");
+            }
+            if (item.getUploader() == null) {
+                throw new IllegalArgumentException("Item uploader cannot be null");
+            }
             this.items.add(item);
             updateCategories();
             this.updated_date = new Date();
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Failed to add item: " + e.getMessage());
-        }
-    }
-
-    public boolean removeItem(String itemId) {
-        try {
-            if (itemId == null || itemId.trim().isEmpty()) {
-                throw new IllegalArgumentException("Item ID cannot be null or empty");
-            }
-            boolean removed = items.removeIf(item -> item.getItem_id().equals(itemId.trim()));
-            if (removed) {
-                updateCategories();
-                this.updated_date = new Date();
-            }
-            return removed;
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Failed to remove item: " + e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error adding item: " + e.getMessage());
         }
     }
 
@@ -61,8 +82,12 @@ public class Catalog {
             String trimmedKeyword = keyword.trim().toLowerCase();
             List<Item> results = new ArrayList<>();
             for (Item item : items) {
-                if (item.matchesSearch(trimmedKeyword)) {
-                    results.add(item);
+                try {
+                    if (item.matchesSearch(trimmedKeyword)) {
+                        results.add(item);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error searching item: " + e.getMessage());
                 }
             }
             return results;
@@ -74,80 +99,84 @@ public class Catalog {
     public List<Item> filterItems(Category category, GradeLevel grade, Float minPrice, Float maxPrice, String subject, Condition condition) {
         try {
             List<Item> filtered = new ArrayList<>();
+            if (minPrice != null && minPrice < 0) {
+                throw new IllegalArgumentException("Minimum price cannot be negative");
+            }
+            if (maxPrice != null && maxPrice < 0) {
+                throw new IllegalArgumentException("Maximum price cannot be negative");
+            }
+            if (minPrice != null && maxPrice != null && minPrice > maxPrice) {
+                throw new IllegalArgumentException("Minimum price cannot be greater than maximum price");
+            }
             for (Item item : items) {
-                boolean matches = true;
-                if (category != null && item.getCategory() != category) {
-                    matches = false;
-                }
-                if (grade != null && item.getGrade() != grade) {
-                    matches = false;
-                }
-                if (subject != null && !subject.trim().isEmpty()) {
-                    if (item.getSubject() == null || !item.getSubject().toLowerCase().contains(subject.toLowerCase().trim())) {
+                try {
+                    boolean matches = true;
+                    if (category != null && item.getCategory() != category) {
                         matches = false;
                     }
-                }
-                if (item instanceof ForSaleItem) {
-                    ForSaleItem forSale = (ForSaleItem) item;
-                    if (minPrice != null && forSale.getPrice() < minPrice) {
+                    if (grade != null && item.getGrade() != grade) {
                         matches = false;
                     }
-                    if (maxPrice != null && forSale.getPrice() > maxPrice) {
-                        matches = false;
+                    if (subject != null && !subject.trim().isEmpty()) {
+                        String itemSubject = item.getSubject();
+                        if (itemSubject == null || !itemSubject.toLowerCase().contains(subject.toLowerCase().trim())) {
+                            matches = false;
+                        }
                     }
-                    if (condition != null && forSale.getCondition() != condition) {
-                        matches = false;
+                    if (item instanceof ForSaleItem) {
+                        ForSaleItem forSale = (ForSaleItem) item;
+                        if (minPrice != null && forSale.getPrice() < minPrice) {
+                            matches = false;
+                        }
+                        if (maxPrice != null && forSale.getPrice() > maxPrice) {
+                            matches = false;
+                        }
+                        if (condition != null && forSale.getCondition() != condition) {
+                            matches = false;
+                        }
+                    } else {
+                        if (minPrice != null || maxPrice != null || condition != null) {
+                            matches = false;
+                        }
                     }
-                } else if (minPrice != null || maxPrice != null || condition != null) {
-                    matches = false;
-                }
-
-                if (matches) {
-                    filtered.add(item);
+                    if (matches) {
+                        filtered.add(item);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error filtering item: " + e.getMessage());
                 }
             }
             return filtered;
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to filter items: " + e.getMessage());
         } catch (Exception e) {
             throw new RuntimeException("Unexpected error filtering items: " + e.getMessage());
         }
     }
 
-    public Item getItemById(String itemId) {
+    public void updateCategories() {
         try {
-            if (itemId == null || itemId.trim().isEmpty()) {
-                throw new IllegalArgumentException("Item ID cannot be null or empty");
-            }
-            String trimmedId = itemId.trim();
+            categories.clear();
             for (Item item : items) {
-                if (item.getItem_id().equals(trimmedId)) {
-                    return item;
+                try {
+                    Category cat = item.getCategory();
+                    if (cat != null) {
+                        categories.put(cat, categories.getOrDefault(cat, 0) + 1);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error updating category for item: " + e.getMessage());
                 }
             }
-            return null;
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Failed to get item by ID: " + e.getMessage());
+            this.updated_date = new Date();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to update categories: " + e.getMessage());
         }
     }
 
-    public List<Item> getItemsBySeller(User user) {
-        List<Item> userItems = new ArrayList<>();
-        if (user == null) return userItems;
-        for (Item item : items) {
-            if (item.getUploader().equals(user)) {
-                userItems.add(item);
-            }
+    public Date getUpdated_date() {
+        if (updated_date == null) {
+            throw new IllegalStateException("Updated date is not set");
         }
-        return userItems;
-    }
-
-    public void updateCategories() {
-        categories.clear();
-        for (Item item : items) {
-            Category cat = item.getCategory();
-            if (cat != null) {
-                categories.put(cat, categories.getOrDefault(cat, 0) + 1);
-            }
-        }
-        this.updated_date = new Date();
+        return new Date(updated_date.getTime());
     }
 }

@@ -26,7 +26,7 @@ public class Tran {
         root = new BorderPane();
         root.setStyle("-fx-background-color: black;");
 
-        // ===== TOP: Heading =====
+
         Label heading = new Label("Transactions");
         heading.setStyle("-fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold;");
         VBox topBox = new VBox(heading);
@@ -34,7 +34,6 @@ public class Tran {
         topBox.setPadding(new Insets(20, 0, 15, 0));
         root.setTop(topBox);
 
-        // ===== CENTER: Scrollable Transaction List =====
         transactionBox = new VBox(10);
         transactionBox.setPadding(new Insets(10));
         transactionBox.setStyle("-fx-background-color: #222;");
@@ -42,7 +41,6 @@ public class Tran {
 
         loadTransactions();
 
-        // ScrollPane for transactions
         ScrollPane scrollPane = new ScrollPane(transactionBox);
         scrollPane.setFitToWidth(true);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
@@ -51,7 +49,6 @@ public class Tran {
 
         root.setCenter(scrollPane);
 
-        // ===== BOTTOM: Details Button =====
         Button detailsBtn = new Button("Details");
         detailsBtn.setStyle("-fx-background-color: teal; -fx-text-fill: black;");
         detailsBtn.setPrefSize(100, 35);
@@ -67,6 +64,13 @@ public class Tran {
         transactionBox.getChildren().clear();
 
         User currentUser = main.getCurrentUser();
+        if (currentUser == null) {
+            Label errorLabel = new Label("Error: Cannot load transactions, user session not found.");
+            errorLabel.setStyle("-fx-text-fill: red; -fx-padding: 5px;");
+            transactionBox.getChildren().add(errorLabel);
+            return;
+        }
+
         List<Transaction> buyerTransactions = currentUser.getTransactionsAsBuyer();
         List<Transaction> sellerTransactions = currentUser.getTransactionsAsSeller();
 
@@ -75,7 +79,6 @@ public class Tran {
             noTransactions.setStyle("-fx-text-fill: white; -fx-padding: 5px;");
             transactionBox.getChildren().add(noTransactions);
         } else {
-            // Add buyer transactions
             if (!buyerTransactions.isEmpty()) {
                 Label buyerLabel = new Label("Purchases:");
                 buyerLabel.setStyle("-fx-text-fill: teal; -fx-font-weight: bold; -fx-padding: 5px;");
@@ -86,7 +89,6 @@ public class Tran {
                 }
             }
 
-            // Add seller transactions
             if (!sellerTransactions.isEmpty()) {
                 Label sellerLabel = new Label("Sales:");
                 sellerLabel.setStyle("-fx-text-fill: teal; -fx-font-weight: bold; -fx-padding: 5px;");

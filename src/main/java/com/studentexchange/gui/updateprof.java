@@ -22,7 +22,7 @@ public class updateprof {
         root = new BorderPane();
         root.setStyle("-fx-background-color: black;");
 
-        // ===== TOP: Heading =====
+
         Label heading = new Label("Update Profile");
         heading.setStyle("-fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold;");
         VBox topBox = new VBox(heading);
@@ -38,23 +38,20 @@ public class updateprof {
             return;
         }
 
-        // ===== CENTER: Update Form =====
+
         VBox centerBox = new VBox(20);
         centerBox.setAlignment(Pos.TOP_CENTER);
 
-        // Profile Circle
         Circle profileCircle = new Circle(50, Color.GRAY);
         StackPane profilePane = new StackPane(profileCircle);
         profilePane.setAlignment(Pos.CENTER);
         centerBox.getChildren().add(profilePane);
 
-        // GridPane for labels and text fields
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
         grid.setVgap(15);
 
-        // Name
         Label nameLabel = new Label("Name");
         nameLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
         Label nameColon = new Label(":");
@@ -64,7 +61,6 @@ public class updateprof {
         grid.add(nameColon, 1, 0);
         grid.add(nameField, 2, 0);
 
-        // Email
         Label emailLabel = new Label("Email");
         emailLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
         Label emailColon = new Label(":");
@@ -74,7 +70,6 @@ public class updateprof {
         grid.add(emailColon, 1, 1);
         grid.add(emailField, 2, 1);
 
-        // Phone
         Label phoneLabel = new Label("Phone");
         phoneLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
         Label phoneColon = new Label(":");
@@ -84,7 +79,6 @@ public class updateprof {
         grid.add(phoneColon, 1, 2);
         grid.add(phoneField, 2, 2);
 
-        // Address
         Label addressLabel = new Label("Address");
         addressLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
         Label addressColon = new Label(":");
@@ -96,7 +90,6 @@ public class updateprof {
 
         centerBox.getChildren().add(grid);
 
-        // Confirm Button
         Button confirmBtn = new Button("Confirm");
         confirmBtn.setStyle("-fx-background-color: teal; -fx-text-fill: black;");
         confirmBtn.setPrefSize(120, 35);
@@ -112,10 +105,8 @@ public class updateprof {
             }
 
             try {
-                user.setName(name);
+                user.updateProfile(name, phone, address);
                 user.setEmail(email);
-                user.setPhone(phone);
-                user.setAddress(address);
 
                 showAlert("Success", "Profile updated successfully!");
                 main.showProfileScreen();

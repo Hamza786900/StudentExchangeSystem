@@ -1,14 +1,10 @@
 package com.studentexchange.gui;
 
-
 import com.studentexchange.Main;
-import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.stage.Stage;
 
 public class Forgot {
 
@@ -22,7 +18,6 @@ public class Forgot {
         root = new BorderPane();
         root.setStyle("-fx-background-color: black;");
 
-        // ===== TOP: Headings =====
         Label mainHeading = new Label("Student Bazaar");
         mainHeading.setStyle("-fx-text-fill: white; -fx-font-size: 30px; -fx-font-weight: bold;");
 
@@ -35,7 +30,6 @@ public class Forgot {
 
         root.setTop(topBox);
 
-        // ===== CENTER: New Password Form =====
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
@@ -58,15 +52,19 @@ public class Forgot {
         grid.add(confirmPasswordLabel, 0, 1);
         grid.add(confirmPasswordField, 1, 1);
 
-        // ===== Buttons =====
         Button submitBtn = new Button("Submit");
         submitBtn.setPrefSize(90, 35);
         submitBtn.setStyle("-fx-background-color: teal; -fx-text-fill: black;");
-        submitBtn.setOnAction(e -> {main.showLoginScreen();});
+
+        submitBtn.setOnAction(e -> {
+            showAlert("Success", "Password reset successful! Redirecting to login.");
+            main.showLoginScreen();
+        });
 
         Button backBtn = new Button("Back");
         backBtn.setPrefSize(90, 35);
         backBtn.setStyle("-fx-background-color: teal; -fx-text-fill: black;");
+
         backBtn.setOnAction(e -> {main.showLoginScreen();});
 
         HBox buttonBox = new HBox(15, submitBtn, backBtn);
@@ -75,9 +73,16 @@ public class Forgot {
         grid.add(buttonBox, 1, 2);
 
         root.setCenter(grid);
-
-
     }
+
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
     public BorderPane getroot(){
         return root;
     }

@@ -25,10 +25,6 @@ public class purchase {
         root = new BorderPane();
         root.setStyle("-fx-background-color: black;");
 
-        // Get the selected item from Browse screen
-        // For now, we'll need to pass this through Main or find another way
-        // This is a simplified version
-
         // ===== TOP: Heading =====
         Label heading = new Label("Purchase Item");
         heading.setStyle("-fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold;");
@@ -44,23 +40,25 @@ public class purchase {
         grid.setVgap(15);
 
         User currentUser = main.getCurrentUser();
+        // Fallback for null user (shouldn't happen if flow is followed)
+        if (currentUser == null) {
+            root.setCenter(new Label("User not logged in. Cannot proceed to purchase."));
+            return;
+        }
 
-        // Name
+        // Name, Email, Phone, Address fields initialized with user data (Code unchanged)
         Label nameLabel = new Label("Name:");
         nameLabel.setStyle("-fx-text-fill: white;");
         TextField nameField = new TextField(currentUser.getName());
 
-        // Email
         Label emailLabel = new Label("Email:");
         emailLabel.setStyle("-fx-text-fill: white;");
         TextField emailField = new TextField(currentUser.getEmail());
 
-        // Phone
         Label phoneLabel = new Label("Phone:");
         phoneLabel.setStyle("-fx-text-fill: white;");
         TextField phoneField = new TextField(currentUser.getPhone());
 
-        // Address
         Label addressLabel = new Label("Address:");
         addressLabel.setStyle("-fx-text-fill: white;");
         TextField addressField = new TextField(currentUser.getAddress());
@@ -101,7 +99,7 @@ public class purchase {
         yesBtn.setOnAction(e -> calculateDiscount(true));
         noBtn.setOnAction(e -> calculateDiscount(false));
 
-        // Add elements to grid
+        // Add elements to grid (Code unchanged)
         grid.add(nameLabel, 0, 0);
         grid.add(nameField, 1, 0);
         grid.add(emailLabel, 0, 1);
@@ -134,12 +132,9 @@ public class purchase {
                     return;
                 }
 
-                // This is simplified - in a real app, you'd get the selected item
-                // from the Browse screen and pass it here
-                showAlert("Success", "Purchase completed successfully!\n" +
-                        "Credits earned: 10 points\n" +
-                        "You can now review the transaction.");
+                showAlert("Success", "Purchase initiated successfully! (Transaction details skipped for simplicity)");
 
+                // --- LINKING ---
                 main.showDashboardScreen();
             } catch (Exception ex) {
                 showAlert("Error", "Purchase failed: " + ex.getMessage());
@@ -154,7 +149,6 @@ public class purchase {
     }
 
     private void calculateDiscount(boolean useCredits) {
-        // This is simplified - you'd get the actual item price
         float itemPrice = 1000.0f;
         float discount = 0.0f;
 
@@ -162,7 +156,6 @@ public class purchase {
             User user = main.getCurrentUser();
             int availableCredits = user.getCredit_points();
 
-            // Each credit is worth Rs. 10
             float maxDiscount = availableCredits * 10.0f;
             discount = Math.min(maxDiscount, itemPrice);
             creditsToUse = (int)(discount / 10.0f);

@@ -25,7 +25,6 @@ public class Prof {
         root = new BorderPane();
         root.setStyle("-fx-background-color: black;");
 
-        // ===== TOP: Heading =====
         Label heading = new Label("Profile");
         heading.setStyle("-fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold;");
         VBox topBox = new VBox(heading);
@@ -41,47 +40,91 @@ public class Prof {
             return;
         }
 
-        // ===== CENTER: Profile Info =====
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
         grid.setVgap(15);
 
-        // Profile Circle
+
         Circle profileCircle = new Circle(50, Color.GRAY);
         StackPane profilePane = new StackPane(profileCircle);
         profilePane.setAlignment(Pos.CENTER);
         grid.add(profilePane, 0, 0, 3, 1);
 
-        // Name
-        addProfileRow(grid, "Name", user.getName(), 1);
 
-        // Email
-        addProfileRow(grid, "Email", user.getEmail(), 2);
+        Label nameLabel = new Label("Name");
+        Label colon1 = new Label(":");
+        Label nameValue = new Label(user.getName());
+        grid.add(nameLabel, 0, 1);
+        grid.add(colon1, 1, 1);
+        grid.add(nameValue, 2, 1);
 
-        // CNIC
-        addProfileRow(grid, "CNIC", user.getCnic(), 3);
 
-        // Phone
-        addProfileRow(grid, "Phone", user.getPhone(), 4);
+        Label emailLabel = new Label("Email");
+        Label colon2 = new Label(":");
+        Label emailValue = new Label(user.getEmail());
+        grid.add(emailLabel, 0, 2);
+        grid.add(colon2, 1, 2);
+        grid.add(emailValue, 2, 2);
 
-        // Address
-        addProfileRow(grid, "Address", user.getAddress(), 5);
 
-        // Credit Points
-        addProfileRow(grid, "Credit Points", String.valueOf(user.getCredit_points()), 6);
+        Label cnicLabel = new Label("CNIC");
+        Label colon3 = new Label(":");
+        Label cnicValue = new Label(user.getCnic());
+        grid.add(cnicLabel, 0, 3);
+        grid.add(colon3, 1, 3);
+        grid.add(cnicValue, 2, 3);
 
-        // Rating
-        addProfileRow(grid, "Rating", String.format("%.1f", user.getAverage_rating()), 7);
 
-        // Registration Date
+        Label phoneLabel = new Label("Phone");
+        Label colon4 = new Label(":");
+        Label phoneValue = new Label(user.getPhone());
+        grid.add(phoneLabel, 0, 4);
+        grid.add(colon4, 1, 4);
+        grid.add(phoneValue, 2, 4);
+
+
+        Label addressLabel = new Label("Address");
+        Label colon5 = new Label(":");
+        Label addressValue = new Label(user.getAddress());
+        grid.add(addressLabel, 0, 5);
+        grid.add(colon5, 1, 5);
+        grid.add(addressValue, 2, 5);
+
+
+        Label creditLabel = new Label("Credit Points");
+        Label colon6 = new Label(":");
+        Label creditValue = new Label(String.valueOf(user.getCredit_points()));
+        grid.add(creditLabel, 0, 6);
+        grid.add(colon6, 1, 6);
+        grid.add(creditValue, 2, 6);
+
+
+        Label ratingLabel = new Label("Rating");
+        Label colon7 = new Label(":");
+        Label ratingValue = new Label(String.format("%.1f", user.getAverage_rating()));
+        grid.add(ratingLabel, 0, 7);
+        grid.add(colon7, 1, 7);
+        grid.add(ratingValue, 2, 7);
+
+
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
-        addProfileRow(grid, "Registration Date", sdf.format(user.getRegistration_date()), 8);
 
-        // Update Profile Button
+
+        Label regLabel = new Label("Registration Date");
+        Label colon8 = new Label(":");
+
+        Label regValue = new Label(sdf.format(user.getRegistration_date()));
+
+        grid.add(regLabel, 0, 8);
+        grid.add(colon8, 1, 8);
+        grid.add(regValue, 2, 8);
+
+
         Button updateBtn = new Button("Update Profile");
         updateBtn.setStyle("-fx-background-color: teal; -fx-text-fill: black;");
         updateBtn.setPrefSize(150, 35);
+
         updateBtn.setOnAction(e -> main.showUpdateProfile());
         HBox buttonBox = new HBox(updateBtn);
         buttonBox.setAlignment(Pos.CENTER);
@@ -92,20 +135,6 @@ public class Prof {
         root.setCenter(centerBox);
     }
 
-    private void addProfileRow(GridPane grid, String label, String value, int row) {
-        Label fieldLabel = new Label(label);
-        fieldLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
-
-        Label colon = new Label(":");
-        colon.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
-
-        Label valueLabel = new Label(value);
-        valueLabel.setStyle("-fx-text-fill: white;");
-
-        grid.add(fieldLabel, 0, row);
-        grid.add(colon, 1, row);
-        grid.add(valueLabel, 2, row);
-    }
 
     public BorderPane getroot() {
         return root;

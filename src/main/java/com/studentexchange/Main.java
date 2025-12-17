@@ -1,24 +1,24 @@
 package com.studentexchange;
 
 import com.studentexchange.gui.*;
-import com.studentexchange.models.User;
+import com.studentexchange.models.*;
 import com.studentexchange.services.StudentBookExchange;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 public class Main extends Application {
     public static Stage primaryStage;
     private DashboardWrapper dashboardWrapper;
-    private StudentBookExchange system;
+    private StudentBookExchange system = new StudentBookExchange();
     private User currentUser;
+    private Item selectedItem;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
-        this.system = new StudentBookExchange();
         showDemo();
-        primaryStage.setTitle("Student Bazaar");
         primaryStage.show();
     }
 
@@ -32,101 +32,90 @@ public class Main extends Application {
 
     public void setCurrentUser(User user) {
         this.currentUser = user;
+        if (dashboardWrapper != null) {
+            dashboardWrapper.updateUsername();
+        }
+    }
+
+    public Item getSelectedItem() {
+        return selectedItem;
+    }
+
+    public void setSelectedItem(Item item) {
+        this.selectedItem = item;
     }
 
     public void showDemo() {
-        currentUser = null;
         Demo welcomeScreen = new Demo(this);
         Scene scene = new Scene(welcomeScreen.getroot(), 800, 500);
         primaryStage.setScene(scene);
     }
 
     public void showLoginScreen() {
-        Demo1 Login = new Demo1(this);
-        Scene scene = new Scene(Login.getroot(), 800, 500);
+        Demo1 login = new Demo1(this);
+        Scene scene = new Scene(login.getroot(), 800, 500);
         primaryStage.setScene(scene);
     }
 
     public void showRegisterScreen() {
-        Demo2 Register = new Demo2(this);
-        Scene scene = new Scene(Register.getroot(), 800, 500);
+        Demo2 register = new Demo2(this);
+        Scene scene = new Scene(register.getroot(), 800, 500);
         primaryStage.setScene(scene);
     }
 
     public void showDashboardScreen() {
         dashboardWrapper = new DashboardWrapper(this);
-        Scene scene = new Scene(dashboardWrapper.getRoot(), 800, 500);
-        primaryStage.setScene(scene);
-    }
-
-    public void showProfileScreen() {
-        if (dashboardWrapper == null) {
-            dashboardWrapper = new DashboardWrapper(this);
-        }
-        Prof Profile = new Prof(this);
-        dashboardWrapper.setContent(Profile.getroot());
-        Scene scene = new Scene(dashboardWrapper.getRoot(), 800, 500);
-        primaryStage.setScene(scene);
+        showBrowse();
     }
 
     public void showBrowse() {
-        if (dashboardWrapper == null) {
+        if (dashboardWrapper == null)
             dashboardWrapper = new DashboardWrapper(this);
-        }
-        Bitems Browse = new Bitems(this);
-        dashboardWrapper.setContent(Browse.getroot());
-        Scene scene = new Scene(dashboardWrapper.getRoot(), 800, 500);
-        primaryStage.setScene(scene);
-    }
-
-    public void showUploadedItems() {
-        if (dashboardWrapper == null) {
-            dashboardWrapper = new DashboardWrapper(this);
-        }
-        Uitems Uploaded = new Uitems(this);
-        dashboardWrapper.setContent(Uploaded.getroot());
-        Scene scene = new Scene(dashboardWrapper.getRoot(), 800, 500);
-        primaryStage.setScene(scene);
-    }
-
-    public void showMyUploads() {
-        if (dashboardWrapper == null) {
-            dashboardWrapper = new DashboardWrapper(this);
-        }
-        MUitems MyUploads = new MUitems(this);
-        dashboardWrapper.setContent(MyUploads.getroot());
-        Scene scene = new Scene(dashboardWrapper.getRoot(), 800, 500);
-        primaryStage.setScene(scene);
-    }
-
-    public void showTransactions() {
-        if (dashboardWrapper == null) {
-            dashboardWrapper = new DashboardWrapper(this);
-        }
-        Tran transactions = new Tran(this);
-        dashboardWrapper.setContent(transactions.getroot());
-        Scene scene = new Scene(dashboardWrapper.getRoot(), 800, 500);
-        primaryStage.setScene(scene);
-    }
-
-    public void showUpdateProfile() {
-        if (dashboardWrapper == null) {
-            dashboardWrapper = new DashboardWrapper(this);
-        }
-        updateprof update = new updateprof(this);
-        dashboardWrapper.setContent(update.getroot());
-        Scene scene = new Scene(dashboardWrapper.getRoot(), 800, 500);
-        primaryStage.setScene(scene);
+        Bitems browse = new Bitems(this);
+        dashboardWrapper.setContent(browse.getroot());
+        primaryStage.setScene(new Scene(dashboardWrapper.getRoot(), 800, 500));
     }
 
     public void showPurchase() {
-        if (dashboardWrapper == null) {
-            dashboardWrapper = new DashboardWrapper(this);
-        }
-        purchase purchase = new purchase(this);
-        dashboardWrapper.setContent(purchase.getroot());
-        Scene scene = new Scene(dashboardWrapper.getRoot(), 800, 500);
-        primaryStage.setScene(scene);
+        if (dashboardWrapper == null) dashboardWrapper = new DashboardWrapper(this);
+        purchase purchaseScreen = new purchase(this);
+        dashboardWrapper.setContent(purchaseScreen.getroot());
+        primaryStage.setScene(new Scene(dashboardWrapper.getRoot(), 800, 500));
+    }
+
+    public void showTransactions() {
+        if (dashboardWrapper == null) dashboardWrapper = new DashboardWrapper(this);
+        Tran transactions = new Tran(this);
+        dashboardWrapper.setContent(transactions.getroot());
+        primaryStage.setScene(new Scene(dashboardWrapper.getRoot(), 800, 500));
+    }
+
+    public void showMyUploads() {
+        if (dashboardWrapper == null) dashboardWrapper = new DashboardWrapper(this);
+        MUitems myUploads = new MUitems(this);
+        dashboardWrapper.setContent(myUploads.getroot());
+        primaryStage.setScene(new Scene(dashboardWrapper.getRoot(), 800, 500));
+    }
+
+    public void showUploadedItems() {
+        if (dashboardWrapper == null) dashboardWrapper = new DashboardWrapper(this);
+        Uitems upload = new Uitems(this);
+        dashboardWrapper.setContent(upload.getroot());
+        primaryStage.setScene(new Scene(dashboardWrapper.getRoot(), 800, 500));
+    }
+
+    public void showProfileScreen() {
+        if (dashboardWrapper == null) dashboardWrapper = new DashboardWrapper(this);
+        Prof profile = new Prof(this);
+        dashboardWrapper.setContent(profile.getroot());
+        primaryStage.setScene(new Scene(dashboardWrapper.getRoot(), 800, 500));
+    }
+
+    public void showUpdateProfile() {
+        if (dashboardWrapper == null) dashboardWrapper = new DashboardWrapper(this);
+        updateprof update = new updateprof(this);
+        dashboardWrapper.setContent(update.getroot());
+        primaryStage.setScene(new Scene(dashboardWrapper.getRoot(), 800, 500));
     }
 
     public void showForgotPassword() {

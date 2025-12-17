@@ -28,7 +28,6 @@ public class Bitems {
         root = new BorderPane();
         root.setStyle("-fx-background-color: black;");
 
-        // ===== TOP: Heading =====
         Label heading = new Label("Browse Items");
         heading.setStyle("-fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold;");
         VBox topBox = new VBox(heading);
@@ -36,11 +35,9 @@ public class Bitems {
         topBox.setPadding(new Insets(20, 0, 15, 0));
         root.setTop(topBox);
 
-        // ===== CENTER: Search + Items =====
         VBox centerBox = new VBox(20);
         centerBox.setAlignment(Pos.TOP_CENTER);
 
-        // Search Box
         HBox searchBox = new HBox(10);
         searchBox.setAlignment(Pos.CENTER);
         TextField searchField = new TextField();
@@ -58,7 +55,7 @@ public class Bitems {
         searchBox.getChildren().addAll(searchField, searchBtn);
         centerBox.getChildren().add(searchBox);
 
-        // ScrollPane for items
+
         itemsBox = new VBox(15);
         itemsBox.setPadding(new Insets(10));
         itemsBox.setStyle("-fx-background-color: #1c1c1c;");
@@ -69,10 +66,8 @@ public class Bitems {
 
         centerBox.getChildren().add(scrollPane);
 
-        // Load all items initially
         loadItems("");
 
-        // ===== BOTTOM: Details & Purchase Buttons =====
         HBox buttonBox = new HBox(20);
         buttonBox.setAlignment(Pos.CENTER);
         buttonBox.setPadding(new Insets(15, 0, 0, 0));
@@ -161,6 +156,11 @@ public class Bitems {
         }
 
         ForSaleItem forSaleItem = (ForSaleItem) selectedItem;
+
+        if (main.getCurrentUser() == null) {
+            showAlert("Error", "You must be logged in to purchase an item.");
+            return;
+        }
 
         if (forSaleItem.getUploader().equals(main.getCurrentUser())) {
             showAlert("Error", "You cannot purchase your own item");

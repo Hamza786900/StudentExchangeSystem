@@ -25,7 +25,6 @@ public class MUitems {
         root = new BorderPane();
         root.setStyle("-fx-background-color: black;");
 
-        // ===== TOP: Heading =====
         Label heading = new Label("My Uploaded Items");
         heading.setStyle("-fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold;");
         VBox topBox = new VBox(heading);
@@ -33,7 +32,7 @@ public class MUitems {
         topBox.setPadding(new Insets(20, 0, 15, 0));
         root.setTop(topBox);
 
-        // ===== CENTER: Scrollable Uploaded Items List =====
+
         uploadedBox = new VBox(10);
         uploadedBox.setPadding(new Insets(10));
         uploadedBox.setStyle("-fx-background-color: #222;");
@@ -41,7 +40,6 @@ public class MUitems {
 
         loadMyItems();
 
-        // ScrollPane for uploaded items
         ScrollPane scrollPane = new ScrollPane(uploadedBox);
         scrollPane.setFitToWidth(true);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
@@ -50,7 +48,6 @@ public class MUitems {
 
         root.setCenter(scrollPane);
 
-        // ===== BOTTOM: Details Button =====
         Button detailsBtn = new Button("Details");
         detailsBtn.setStyle("-fx-background-color: teal; -fx-text-fill: black;");
         detailsBtn.setPrefSize(100, 35);
@@ -64,6 +61,13 @@ public class MUitems {
 
     private void loadMyItems() {
         uploadedBox.getChildren().clear();
+
+        if (main.getCurrentUser() == null) {
+            Label errorLabel = new Label("Error: Cannot load items, user session not found.");
+            errorLabel.setStyle("-fx-text-fill: red; -fx-padding: 5px;");
+            uploadedBox.getChildren().add(errorLabel);
+            return;
+        }
 
         List<Item> myItems = main.getSystem().getCatalog().getItemsBySeller(main.getCurrentUser());
 

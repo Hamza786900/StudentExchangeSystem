@@ -11,6 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 public class Demo2 {
+
     Main main;
     BorderPane root;
 
@@ -23,7 +24,6 @@ public class Demo2 {
         root = new BorderPane();
         root.setStyle("-fx-background-color: black;");
 
-        // ===== TOP: Headings =====
         Label mainHeading = new Label("Student Bazaar");
         mainHeading.setStyle("-fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold;");
 
@@ -35,41 +35,45 @@ public class Demo2 {
         topBox.setPadding(new Insets(25, 0, 15, 0));
         root.setTop(topBox);
 
-        // ===== CENTER: Register Form =====
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
         grid.setVgap(12);
 
-        Label nameLabel = new Label("Name:");
-        nameLabel.setStyle("-fx-text-fill: white;");
         TextField nameField = new TextField();
         nameField.setPromptText("Enter name");
 
-        Label emailLabel = new Label("Email:");
-        emailLabel.setStyle("-fx-text-fill: white;");
         TextField emailField = new TextField();
         emailField.setPromptText("Enter email");
 
-        Label passwordLabel = new Label("Password:");
-        passwordLabel.setStyle("-fx-text-fill: white;");
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Enter password");
 
-        Label phoneLabel = new Label("Phone:");
-        phoneLabel.setStyle("-fx-text-fill: white;");
         TextField phoneField = new TextField();
         phoneField.setPromptText("Enter phone");
 
-        Label cnicLabel = new Label("CNIC:");
-        cnicLabel.setStyle("-fx-text-fill: white;");
         TextField cnicField = new TextField();
-        cnicField.setPromptText("Enter CNIC (13 digits)");
+        cnicField.setPromptText("Enter CNIC");
 
-        Label addressLabel = new Label("Address:");
-        addressLabel.setStyle("-fx-text-fill: white;");
         TextField addressField = new TextField();
         addressField.setPromptText("Enter address");
+
+
+        Label nameLabel = new Label("Name:");
+        Label emailLabel = new Label("Email:");
+        Label passwordLabel = new Label("Password:");
+        Label phoneLabel = new Label("Phone:");
+        Label cnicLabel = new Label("CNIC:");
+        Label addressLabel = new Label("Address:");
+
+
+        nameLabel.setStyle("-fx-text-fill: white;");
+        emailLabel.setStyle("-fx-text-fill: white;");
+        passwordLabel.setStyle("-fx-text-fill: white;");
+        phoneLabel.setStyle("-fx-text-fill: white;");
+        cnicLabel.setStyle("-fx-text-fill: white;");
+        addressLabel.setStyle("-fx-text-fill: white;");
+
 
         grid.add(nameLabel, 0, 0);
         grid.add(nameField, 1, 0);
@@ -83,13 +87,13 @@ public class Demo2 {
         grid.add(cnicField, 1, 4);
         grid.add(addressLabel, 0, 5);
         grid.add(addressField, 1, 5);
-
         root.setCenter(grid);
 
-        // ===== BOTTOM: Buttons =====
         Button registerBtn = new Button("Register");
         registerBtn.setPrefSize(90, 35);
         registerBtn.setStyle("-fx-background-color: teal; -fx-text-fill: black;");
+
+
         registerBtn.setOnAction(e -> {
             String name = nameField.getText().trim();
             String email = emailField.getText().trim();
@@ -98,23 +102,20 @@ public class Demo2 {
             String cnic = cnicField.getText().trim();
             String address = addressField.getText().trim();
 
-            if (name.isEmpty() || email.isEmpty() || password.isEmpty() ||
-                    phone.isEmpty() || cnic.isEmpty() || address.isEmpty()) {
+            if (name.isEmpty() || email.isEmpty() || password.isEmpty() || phone.isEmpty() || cnic.isEmpty() || address.isEmpty()) {
                 showAlert("Error", "Please fill in all fields");
                 return;
             }
 
-            if (!main.getSystem().validateCNIC(cnic)) {
-                showAlert("Error", "Invalid CNIC format. Please enter 13 digits.");
-                return;
-            }
-
             try {
+
                 User newUser = main.getSystem().registerUser(name, cnic, email, password, phone, address);
-                showAlert("Success", "Registration successful! Please login.");
-                main.showLoginScreen();
-            } catch (IllegalArgumentException ex) {
-                showAlert("Error", ex.getMessage());
+                if (newUser != null) {
+                    showAlert("Success", "Registration successful! Redirecting to login.");
+                    main.showLoginScreen();
+                }
+            } catch (Exception ex) {
+                showAlert("Error", "Registration failed: " + ex.getMessage());
             }
         });
 
@@ -126,7 +127,6 @@ public class Demo2 {
         HBox buttonBox = new HBox(15, registerBtn, backBtn);
         buttonBox.setAlignment(Pos.BOTTOM_RIGHT);
         buttonBox.setPadding(new Insets(0, 20, 20, 0));
-
         root.setBottom(buttonBox);
     }
 
